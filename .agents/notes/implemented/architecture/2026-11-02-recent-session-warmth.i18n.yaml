@@ -1,0 +1,19 @@
+# Bilingual-pair consistency record for 2026-11-02-recent-session-warmth.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/architecture/2026-11-02-recent-session-warmth.md
+/agent-note-recent-session-warmth-in-workspace-navigation:
+  en: 7e32af566782956b
+  zh: c334cd0b84a1d493
+/agent-note-recent-session-warmth-in-workspace-navigation/problem:
+  en: 317bdf28642b6f53
+  zh: 893b2d717e9dcba9
+/agent-note-recent-session-warmth-in-workspace-navigation/decision:
+  en: 1b580c9c224934ff
+  zh: adec17a7ae7c695a
+/agent-note-recent-session-warmth-in-workspace-navigation/alternatives-considered:
+  en: 5727d9ac4fe78cf7
+  zh: dbbd1b63c39d1540
+/agent-note-recent-session-warmth-in-workspace-navigation/consequences:
+  en: 109fbda20a9a5d10
+  zh: e1065d9b9a1ee187

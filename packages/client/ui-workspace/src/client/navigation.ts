@@ -40,6 +40,8 @@ export interface StartSessionOptions extends DraftInitializationOptions {
 export interface UiWorkspace {
   /**
    * Select a Session and show its Conversation as one UI navigation action.
+   * The Session it replaces keeps its transcript and history stream open until
+   * the `recentSessionsRetained` bound evicts it or it is archived.
    * @param target - known Session identity or durable direct-parent subagent address to display.
    */
   openSession(target: SessionTarget): void
@@ -90,7 +92,8 @@ export interface UiWorkspace {
    */
   startSession(workspaceId?: WorkspaceId, options?: StartSessionOptions): void
   /**
-   * Archive a Session and clear it when it is the current selection.
+   * Archive a Session, release its retained recent copy, and clear it when it
+   * is the current selection.
    * @param sessionId - Session to archive.
    * @param options - `stopActivity` asks the Host to stop the Session's running work instead of refusing.
    */
@@ -174,6 +177,12 @@ class UiWorkspaceService extends Service implements UiWorkspace {
     {}, { persist: { name: 'dsh.sessions.current' } },
   )
   private mainReference: SessionReference | undefined
+  /**
+   * The most recently closed Sessions, least recently closed first. Each warm
+   * reference keeps its transcript and history stream open, so reopening one
+   * renders from Client memory instead of refetching the opening snapshot.
+   */
+  private readonly warm = new Map<SessionId, SessionReference>()
   private restorationNavigation: AbortSignal | undefined
 
   /**
@@ -183,6 +192,8 @@ class UiWorkspaceService extends Service implements UiWorkspace {
    * @param sessions - pure Session Controller.
    * @param view - the browser's viewing-store write set (one instance shared with its registration).
    * @param notify - show one notice through the Workspace notice channel.
+   * @param warmSessionLimit - how many closed Sessions stay warm; 0 releases the
+   * outgoing Session as soon as another one opens.
    */
   constructor(
     ctx: Context,
@@ -191,6 +202,7 @@ class UiWorkspaceService extends Service implements UiWorkspace {
     private readonly sessions: ISessions,
     private readonly view: Pick<WorkspaceViewStoreActions, 'pinSessionOrder'>,
     private readonly notify: (toast: RowToast) => void,
+    private readonly warmSessionLimit: number,
   ) {
     super(ctx, 'uiWorkspace')
     ctx.effect(() => {
@@ -201,6 +213,7 @@ class UiWorkspaceService extends Service implements UiWorkspace {
         const reference = this.mainReference
         this.mainReference = undefined
         reference?.release()
+        this.releaseAllWarm()
       }
     }, 'ui-workspace: Workspace navigation policy')
   }
@@ -381,6 +394,7 @@ class UiWorkspaceService extends Service implements UiWorkspace {
 
   async archiveSession(sessionId: SessionId, options: { readonly stopActivity?: boolean } = {}): Promise<void> {
     await this.workspaces.archiveSession(sessionId, options)
+    this.releaseWarm(sessionId)
     if (this.mainReference?.sessionId === sessionId) this.clearMain()
   }
 
@@ -505,9 +519,12 @@ class UiWorkspaceService extends Service implements UiWorkspace {
 
   /** @returns true when an archived current selection was cleared. */
   private clearArchivedCurrent(): boolean {
+    const { archivedSessionIds } = this.workspaces.list.getSnapshot()
+    for (const id of [...this.warm.keys()]) {
+      if (archivedSessionIds.includes(id)) this.releaseWarm(id)
+    }
     const current = this.mainReference?.sessionId
-    if (current === undefined
-      || !this.workspaces.list.getSnapshot().archivedSessionIds.includes(current)) return false
+    if (current === undefined || !archivedSessionIds.includes(current)) return false
     this.clearMain()
     return true
   }
@@ -548,8 +565,37 @@ class UiWorkspaceService extends Service implements UiWorkspace {
     }
     const previous = this.mainReference
     this.mainReference = reference
+    // A Session changing sides in the LRU keeps one live reference through the
+    // swap: the new main was retained above before its warm reference goes, and
+    // the outgoing Session gains its `recentMain` reference before release.
+    this.releaseWarm(reference.sessionId)
+    if (previous !== undefined && previous.sessionId !== reference.sessionId && this.warmSessionLimit > 0) {
+      this.promoteWarm(previous.sessionId, this.sessions.retain(previous.sessionId, { source: 'recentMain' }))
+    }
     previous?.release()
     if (panel === 'reveal') this.ctx.layout.selectPanel(null)
+  }
+
+  /** Admit the closed Session as most recently closed and evict the overflow. */
+  private promoteWarm(id: SessionId, reference: SessionReference): void {
+    this.warm.set(id, reference)
+    for (const [oldestId, oldestReference] of this.warm) {
+      if (this.warm.size <= this.warmSessionLimit) break
+      this.warm.delete(oldestId)
+      oldestReference.release()
+    }
+  }
+
+  /** @param id - Session identity; a warm reference is released and forgotten. */
+  private releaseWarm(id: SessionId): void {
+    const reference = this.warm.get(id)
+    if (reference === undefined) return
+    this.warm.delete(id)
+    reference.release()
+  }
+
+  private releaseAllWarm(): void {
+    for (const id of [...this.warm.keys()]) this.releaseWarm(id)
   }
 
 }

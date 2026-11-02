@@ -276,6 +276,8 @@ interface BenchOptions {
   readonly workspaces?: WorkspaceSnapshot
   readonly sessions?: SessionListState
   readonly configureSessions?: (sessions: FakeSessions) => void
+  /** Closed Sessions navigation keeps warm; the shipped default is 3. */
+  readonly warmSessions?: number
 }
 
 function bench(options: BenchOptions = {}) {
@@ -309,6 +311,7 @@ function bench(options: BenchOptions = {}) {
     sessions,
     view.actions,
     notify,
+    options.warmSessions ?? 3,
   )
   return { ctx, directoryPicker, sessions, uiWorkspace, workspaces, layout, selectPanel, view, notify, requestDraftInitialization }
 }
@@ -317,6 +320,11 @@ function lastOpening(open: MockInstance<UiWorkspaceService['openWorkspace']>): P
   const result = open.mock.results.at(-1)
   if (result?.type !== 'return') throw new Error('startSession did not start Workspace navigation')
   return result.value
+}
+
+/** The Session references `sessions.retain` produced for one id, in call order. */
+function refsOf(sessions: FakeSessions, id: SessionId): RetainedSession[] {
+  return sessions.retained.filter(item => item.reference.sessionId === id)
 }
 
 describe('UiWorkspaceService', () => {
@@ -428,6 +436,84 @@ describe('UiWorkspaceService', () => {
     expect(b.selectPanel).toHaveBeenCalledWith(null)
     expect(b.sessions.retain).toHaveBeenCalledWith(sid('target'), { source: 'mainView' })
     expect(b.sessions.refreshProjections).not.toHaveBeenCalled()
+  })
+
+  it('hands the switched-from Session a warm reference before releasing its main one', () => {
+    const b = bench()
+    b.uiWorkspace.openSession(sid('a'))
+    b.uiWorkspace.openSession(sid('b'))
+    expect(b.sessions.retain.mock.calls.map(([id, options]) => [id, options.source])).toEqual([
+      [sid('a'), 'mainView'],
+      [sid('b'), 'mainView'],
+      [sid('a'), 'recentMain'],
+    ])
+    expect(refsOf(b.sessions, sid('a'))[0]!.release).toHaveBeenCalledOnce()
+    expect(refsOf(b.sessions, sid('a'))[1]!.release).not.toHaveBeenCalled()
+  })
+
+  it('reopens a warm Session by releasing only its warm reference and evicts the least recently closed', () => {
+    const b = bench({ warmSessions: 2 })
+    b.uiWorkspace.openSession(sid('a'))
+    b.uiWorkspace.openSession(sid('b'))
+    const warmA = refsOf(b.sessions, sid('a'))[1]!
+
+    b.uiWorkspace.openSession(sid('a'))
+    expect(warmA.release).toHaveBeenCalledOnce()
+    const warmB = refsOf(b.sessions, sid('b'))[1]!
+    b.uiWorkspace.openSession(sid('c'))
+    b.uiWorkspace.openSession(sid('d'))
+    // The bound of two keeps the most recently closed pair; selecting d closed a third.
+    expect(warmB.release).toHaveBeenCalledOnce()
+    expect(refsOf(b.sessions, sid('a')).at(-1)!.release).not.toHaveBeenCalled()
+    expect(refsOf(b.sessions, sid('c'))[1]!.release).not.toHaveBeenCalled()
+
+    // Re-selecting the current Session re-retains it without warming a copy.
+    b.sessions.retain.mockClear()
+    b.uiWorkspace.openSession(sid('d'))
+    expect(b.sessions.retain).toHaveBeenCalledExactlyOnceWith(sid('d'), { source: 'mainView' })
+  })
+
+  it('releases the outgoing Session at once when warmth is zero', () => {
+    const b = bench({ warmSessions: 0 })
+    b.uiWorkspace.openSession(sid('a'))
+    b.uiWorkspace.openSession(sid('b'))
+    expect(b.sessions.retain).toHaveBeenCalledTimes(2)
+    expect(b.sessions.retain).not.toHaveBeenCalledWith(sid('a'), { source: 'recentMain' })
+    expect(refsOf(b.sessions, sid('a'))[0]!.release).toHaveBeenCalledOnce()
+  })
+
+  it('releases a warm Session that gets archived', async () => {
+    const b = bench()
+    b.uiWorkspace.openSession(sid('a'))
+    b.uiWorkspace.openSession(sid('b'))
+    const warmA = refsOf(b.sessions, sid('a'))[1]!
+
+    await b.uiWorkspace.archiveSession(sid('a'))
+
+    expect(warmA.release).toHaveBeenCalledOnce()
+  })
+
+  it('releases a warm Session that a catalog update archives', () => {
+    const b = bench()
+    b.uiWorkspace.openSession(sid('a'))
+    b.uiWorkspace.openSession(sid('b'))
+    const warmA = refsOf(b.sessions, sid('a'))[1]!
+
+    b.workspaces.list.set(workspaceState([], [sid('a')]))
+
+    expect(warmA.release).toHaveBeenCalledOnce()
+  })
+
+  it('releases warm references when navigation disposes', async () => {
+    const b = bench()
+    b.uiWorkspace.openSession(sid('a'))
+    b.uiWorkspace.openSession(sid('b'))
+    const warmA = refsOf(b.sessions, sid('a'))[1]!
+
+    await b.ctx.fiber.dispose()
+
+    expect(warmA.release).toHaveBeenCalledOnce()
+    expect(refsOf(b.sessions, sid('b'))[0]!.release).toHaveBeenCalledOnce()
   })
 
   it('keeps the current panel when retaining the target fails', () => {
@@ -759,12 +845,14 @@ describe('UiWorkspaceService', () => {
     })
     b.uiWorkspace.startSession(wid('old'))
     await vi.waitFor(() => {
-      expect(b.sessions.retain).toHaveBeenLastCalledWith(sid('created-old'), { source: 'mainView' })
+      // A later navigation may re-retain the replaced Session warmly after this
+      // call, so membership rather than the final call names the selection.
+      expect(b.sessions.retain).toHaveBeenCalledWith(sid('created-old'), { source: 'mainView' })
     })
     b.uiWorkspace.openSession(current.id)
     b.uiWorkspace.startSession()
     await vi.waitFor(() => {
-      expect(b.sessions.retain).toHaveBeenLastCalledWith(sid('created-current-home'), { source: 'mainView' })
+      expect(b.sessions.retain).toHaveBeenCalledWith(sid('created-current-home'), { source: 'mainView' })
     })
     const recentOnly = bench({
       sessions: sessionState([current, recent]),

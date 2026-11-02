@@ -2,6 +2,10 @@
 
 DeepSeek Harness is an all-plugin Cordis agent harness. Read [docs/architecture.md](docs/architecture.md) before changing `packages/`; follow [docs/AGENTS.md](docs/AGENTS.md) for documentation.
 
+## Личный форк (приоритет над остальными правилами)
+
+Это форк `deepseek-harness` (remote `origin` — `git@github.com:ferrovovan/my-deepseek-harness.git`). Личные фичи из [FEATURES.md](FEATURES.md) важнее изменений апстрима при любом обновлении; обновление выполняется только по [UPDATING-GUIDE.md](UPDATING-GUIDE.md) и начинается с тщательного аудита всего дифа апстрима. `start.sh` и `UPDATE.md` в корне — личные файлы форка; не удалять их и не перемещать при слияниях и чистках.
+
 ## Pre-stable APIs and released Session data
 
 Public APIs are pre-stable; update every consumer. Follow [version/status](docs/session-format-status.md) and [type acknowledgements](docs/cookbook/reviewing-persistence-type-changes.md). [Adjacent migration](.agents/notes/implemented/architecture/2026-08-31-released-session-format-migrations.md) may add a version-named successor but never move, overwrite, or delete committed generations; predecessors imply neither fallback nor downgrade support. SQLite uses monotonic `SCHEMA_VERSION`.
@@ -180,7 +184,7 @@ Docs accompany every code change: update affected README and JSDoc contracts tog
 
 ## Editing these instructions
 
-`CLAUDE.md` symlinks `AGENTS.md` at root and `packages/`; edit the real file. Keep each rule self-contained while linking high-level docs. Condense when clarity survives; raise a `verify-doc-budgets` ceiling when the required content genuinely needs more space.
+`AGENTS.md` is the single instruction file at root and `packages/`; edit it directly (this fork keeps no `CLAUDE.md` symlinks). Keep each rule self-contained while linking high-level docs. Condense when clarity survives; raise a `verify-doc-budgets` ceiling when the required content genuinely needs more space.
 
 ## Vendoring policy
 
