@@ -1,83 +1,71 @@
-# DeepSeek Harness
+# DeepSeek Harness — 个人分支
 
 [English](README.md) | 中文
 
-DeepSeek Harness（`dsh`）是由 [DeepSeek AI](https://deepseek.com) 开发的开源 agent harness（智能体框架）。
+本文另有[俄文版](README.ru.md)。
 
-它构建于**一切皆插件**的架构之上，由 [Cordis](https://github.com/cordiverse/cordis) 驱动，其设计参见论文 [_A Programming Paradigm for Spatiotemporal Composability_](https://arxiv.org/abs/2608.25512)。
+本仓库是 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（`dsh`）的个人分支。DeepSeek Harness 是由 [DeepSeek AI](https://deepseek.com) 开发的开源 agent harness（智能体框架）。本分支在一台个人机器上日常运行该项目，并携带少量个人体验功能。
 
-文档：[https://deepseek-harness.github.io/deepseek-harness/](https://deepseek-harness.github.io/deepseek-harness/)
+框架架构未改动：一切皆插件，构建于 [Cordis](https://github.com/cordiverse/cordis) 之上（设计论文见 [_A Programming Paradigm for Spatiotemporal Composability_](https://arxiv.org/abs/2608.25512)）。完整文档由上游项目维护：[https://deepseek-harness.github.io/deepseek-harness/](https://deepseek-harness.github.io/deepseek-harness/)。
 
-## 开发者预览
+## 本分支的改动
 
-DeepSeek Harness 处于 _开发者预览_ 阶段，正在快速迭代。**未来将出现破坏兼容性的变更。**
+个人功能列于 [FEATURES.md](FEATURES.md)；每次更新都以这些功能为基准合并上游，而不是让上游覆盖它们：
 
-运行本项目前，请阅读[安全说明](SAFETY.zh.md)。
+- 最近关闭会话的热缓存：切回最近会话时直接从 Client 内存渲染，不再重新拉取历史。上限由 `ui-workspace` 插件配置中的 `recentSessionsRetained` 控制。
+- `./start.sh`：systemd 用户服务助手，让 `dsh web` 在终端关闭后持续服务（`start` / `stop` / `restart` / `status` / `logs` / `run`，端口经 `DSH_WEB_PORT` 设置）。
+
+本分支的分支名为 `main`；上游对应 `master`。更新本分支是一次带完整审计的刻意 merge-forward，规程见 [UPDATING-GUIDE.md](UPDATING-GUIDE.md)。
 
 <a id="run"></a>
 
-## 运行
-
-### 通过 `npm` 运行
-
-安装 `Node.js`，然后运行：
-
-```sh
-npx @deepseek-ai/dsh web
-```
-
-该命令默认会在 `http://127.0.0.1:3080` 启动 Web UI，本机启动时还会用默认浏览器打开页面。通过 SSH 启动时只打印宿主机 URL，因为本地转发地址由 SSH 客户端或编辑器持有。传入 `--no-open` 可仅运行服务器而不打开浏览器。详见 [Web UI 指南](docs/user/guide/index.zh.md)。
+## 从本分支源码运行
 
 <a id="run-from-source"></a>
 
-### 从源码运行
-
-如需从仓库源码运行：
-
 ```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
+git clone -b main https://github.com/ferrovovan/my-deepseek-harness.git
 cd deepseek-harness
 pnpm install
 pnpm run build
 pnpm dsh web
 ```
 
-`pnpm run build` 会准备仓库产物。`pnpm dsh web` 会直接使用这些已构建产物，不会重新构建。
+`pnpm run build` 会准备仓库产物；`pnpm dsh web` 直接使用这些已构建产物，在 `http://127.0.0.1:3080` 提供 Web UI，不会重新构建。传入 `--no-open` 可不打开浏览器。
 
-## 社区与支持
+## 保持后台运行
 
-- 通过 [GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions) 提交反馈或 bug 报告。
-- 为你的插件仓库添加 [`dsh-plugin`](https://github.com/topics/dsh-plugin) 话题，便于被发现。
-- 欢迎加入 DeepSeek Harness 企微群！扫描下方二维码填写入群问卷，小助手会定期发送入群邀请。
+```sh
+./start.sh
+```
 
-<table>
-  <thead>
-    <tr>
-      <th align="center">入群问卷</th>
-      <th align="center">微信公众号</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td align="center"><a href="https://trtgsjkv6r.feishu.cn/share/base/form/shrcnIt5twSVdLGD52KJBckGCgg"><img src="https://cdn.deepseek.com/harness/readme/community-wecom-survey.png" alt="DeepSeek Harness 入群问卷二维码" width="180" height="180"></a></td>
-      <td align="center"><img src="https://cdn.deepseek.com/harness/readme/community-wechat-official-account.png" alt="DeepSeek Harness 团队微信公众号二维码" width="180" height="180"></td>
-    </tr>
-  </tbody>
-</table>
+首次运行会安装并启动 `dsh-web` systemd 用户服务，并打印 Web UI 地址。`./start.sh run` 则让同一服务在前台运行。`./start.sh status` 会重新打印带 `?token=` 查询参数的 URL —— 即访问令牌 —— 因此启动服务的终端关闭后仍可找回链接和令牌。
 
-## 参与贡献
+## 运行上游发行版
 
-参见 [CONTRIBUTING.md](CONTRIBUTING.zh.md)。
+已发布的 npm 包由上游维护，不包含本分支的功能：
+
+```sh
+npx @deepseek-ai/dsh web
+```
+
+## 状态与安全
+
+DeepSeek Harness 处于 _开发者预览_ 阶段，正在快速迭代。**未来将出现破坏兼容性的变更。** 运行本项目前，请阅读[安全说明](SAFETY.zh.md)。
 
 ## 开发
 
-请先阅读[开发指南](docs/development.zh.md)与[架构文档](docs/architecture.zh.md)。
+请先阅读上游[开发指南](docs/development.zh.md)与[架构文档](docs/architecture.zh.md)。`pnpm run dev:web` 会在一个终端里完成构建、启动，并在源码修改时重建 client bundle；`make help` 列出 Web 与 Desktop 对应的 Make target。
 
-`pnpm run dev:web` 会在一个终端里完成构建、启动，并在源码修改时重建 client bundle；`make help` 列出 Web 与 Desktop 对应的 Make target。完整表格见开发指南的「应用命令」一节。
+面向 agent：请遵循 [AGENTS.md](AGENTS.md)，其中的个人分支一节说明了本分支的规则。
 
-面向 agent：请遵循 [AGENTS.md](AGENTS.md)。
+## 社区与支持
+
+上游社区渠道：[GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions) 与 [DeepSeek Harness Discord](https://discord.gg/4MrtZUhpxg)。参与贡献请走上游 [CONTRIBUTING.md](CONTRIBUTING.zh.md)。
 
 ## 引用
+
+被分支的上游项目：
 
 ```bibtex
 @misc{deepseek-harness2026,
