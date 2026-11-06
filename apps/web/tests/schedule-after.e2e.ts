@@ -79,10 +79,11 @@ const WEB_PATCHES = bundlePatchPaths(WEB_BUNDLE, (JSON.parse(readFileSync(join(W
 /**
  * Write the overlay that makes every step carry a fresh clock reading.
  *
- * The shipped Web composition carries no `time-context` row and the `standard`
- * preset owns the clock, so an overlay naming a Host row reaches nothing. The
- * overlay therefore restates the shipped `preset-standard` row with its
- * `time-context` plugin configured to re-read on every step.
+ * The shipped Web composition carries no `time-context` row and this fork cut
+ * the clock from every preset, so an overlay naming a Host row reaches nothing.
+ * The overlay therefore restates the shipped `preset-standard` row, adding the
+ * `time-context` plugin itself (as a test fixture only) configured to re-read
+ * on every step.
  * @param dir - Directory that receives the overlay file.
  * @returns Absolute path of the written overlay.
  */
@@ -94,9 +95,14 @@ async function writeEveryStepOverlay(dir: string): Promise<string> {
   const row = composeEntries(layers).find(entry => entry.id === 'preset-standard')
   if (row === undefined) throw new Error('the shipped Web surface declares no preset-standard row')
   const config = row.config as { plugins: Array<{ id?: string; config?: unknown }> }
-  const plugins = config.plugins.map(plugin => plugin.id === 'time-context'
+  const remapped = config.plugins.map(plugin => plugin.id === 'time-context'
     ? { ...plugin, config: { refreshIntervalMs: 0 } }
     : plugin)
+  const plugins = remapped.some(plugin => plugin.id === 'time-context') ? remapped
+    : [
+      ...remapped,
+      { id: 'time-context', name: '@deepseek-ai/dsh-time-context', config: { refreshIntervalMs: 0 } },
+    ]
   const path = join(dir, 'time-context-every-step.patch.yml')
   await writeFile(path, dump([
     { id: 'preset-standard', config: { ...config, plugins } },
@@ -983,18 +989,16 @@ describe.skipIf(MODE === 'record')('web e2e: active Schedule catalog', () => {
     }
     for (const id of ['preset-standard', 'preset-ptc', 'preset-cordis']) {
       const plugins = presetPlugins(id)
-      expect(plugins.filter(row => row.id === 'time-context'
-        && row.name === '@deepseek-ai/dsh-time-context')).toHaveLength(1)
       expect(plugins.filter(row => row.id === 'tool-schedule'
         && row.name === '@deepseek-ai/dsh-tool-schedule')).toHaveLength(1)
-      for (const name of ['@deepseek-ai/dsh-time-context', '@deepseek-ai/dsh-tool-schedule']) {
-        const matches = plugins.filter(row => row.name === name)
-        expect(matches).toHaveLength(1)
-        expect(matches[0]?.disabled).not.toBe(true)
-      }
+      const matches = plugins.filter(row => row.name === '@deepseek-ai/dsh-tool-schedule')
+      expect(matches).toHaveLength(1)
+      expect(matches[0]?.disabled).not.toBe(true)
     }
-    expect(presetPlugins('preset-minimal').some(row => row.name === '@deepseek-ai/dsh-time-context'
-      || row.name === '@deepseek-ai/dsh-tool-schedule')).toBe(false)
+    // Fork policy: the per-step clock injection is cut from every preset here.
+    for (const id of ['preset-standard', 'preset-ptc', 'preset-cordis', 'preset-minimal']) {
+      expect(presetPlugins(id).some(row => row.name === '@deepseek-ai/dsh-time-context')).toBe(false)
+    }
 
     await page.getByRole('button', { name: 'Automation tasks', exact: true }).click()
     const manager = page.getByTestId('task-manager-page')

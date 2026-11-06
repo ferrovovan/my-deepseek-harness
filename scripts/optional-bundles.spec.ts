@@ -237,7 +237,7 @@ describe('optional bundles', () => {
     expect(composed.some(entry => entry.id === 'time-context')).toBe(false)
   })
 
-  it('keeps the clock and the reminder tools on the presets that declare them', () => {
+  it('keeps the reminder tools on the presets that declare them and the clock out of all of them', () => {
     const composed = composeEntries(shipped)
     type PresetRow = { id?: string; name?: string; disabled?: boolean; config?: unknown }
     const presetPlugins = (id: string): PresetRow[] => {
@@ -257,7 +257,6 @@ describe('optional bundles', () => {
     for (const id of ['preset-standard', 'preset-cordis', 'preset-ptc']) {
       const plugins = presetPlugins(id)
       for (const plugin of [
-        { id: 'time-context', name: '@deepseek-ai/dsh-time-context' },
         { id: 'tool-schedule', name: '@deepseek-ai/dsh-tool-schedule' },
       ]) {
         const matches = plugins.filter(row => row.id === plugin.id && row.name === plugin.name)
@@ -265,14 +264,17 @@ describe('optional bundles', () => {
         expect(matches[0]?.disabled).not.toBe(true)
       }
     }
+    // Fork policy: the per-step clock injection is cut from this build entirely.
+    for (const id of ['preset-standard', 'preset-cordis', 'preset-ptc', 'preset-minimal']) {
+      expect(presetPlugins(id).some(row => row.name === '@deepseek-ai/dsh-time-context')).toBe(false)
+    }
     for (const id of ['preset-standard', 'preset-cordis', 'preset-ptc']) {
       for (const rowId of ['tool-subagent', 'tool-subagent-fork']) {
         expect(presetPlugins(id).find(plugin => plugin.id === rowId)?.config).not.toHaveProperty('toolFilter')
       }
     }
-    // `minimal` declares neither, so it composes no clock reading and no reminder tool.
-    expect(presetPlugins('preset-minimal').some(row => row.name === '@deepseek-ai/dsh-time-context'
-      || row.name === '@deepseek-ai/dsh-tool-schedule')).toBe(false)
+    // `minimal` declares no reminder tool, so it composes none.
+    expect(presetPlugins('preset-minimal').some(row => row.name === '@deepseek-ai/dsh-tool-schedule')).toBe(false)
   })
 
   it.each(OPTIONAL_BUNDLES)('%s resolves a title, description, and icon in both shipped languages', (name) => {
