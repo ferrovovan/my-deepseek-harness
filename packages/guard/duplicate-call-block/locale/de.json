@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Doppelte Aufrufe blockieren",
+    "description": "Verhindern Sie, dass die KI denselben Toolaufruf innerhalb eines Durchlaufs erneut ausführt."
+  }
+}

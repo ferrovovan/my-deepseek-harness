@@ -424,6 +424,28 @@ export interface Config {
 ```
 <!-- END GENERATED config-catalog:@deepseek-ai/dsh-attachment-local -->
 
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-bash-hygiene -->
+<a id="deepseek-aidsh-bash-hygiene"></a>
+
+## `@deepseek-ai/dsh-bash-hygiene`
+
+- `inject`: `tools`
+- `source`: [`packages/guard/bash-hygiene/src/index.ts:22`](../packages/guard/bash-hygiene/src/index.ts)
+
+```ts config-catalog
+/**
+ * Plugin config. Both bans default to enabled; a deployment with a different
+ * loop policy can switch either one off without removing the plugin.
+ */
+export interface Config {
+  /** Deny foreground `sleep <seconds>` polling (default true). */
+  banSleepPolling?: boolean
+  /** Deny full-suite `pytest` invocations (default true). */
+  banFullSuiteTests?: boolean
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-bash-hygiene -->
+
 <!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-bash-local -->
 <a id="deepseek-aidsh-bash-local"></a>
 
@@ -895,6 +917,27 @@ export interface Config {
 }
 ```
 <!-- END GENERATED config-catalog:@deepseek-ai/dsh-deepseek-account-platform -->
+
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-duplicate-call-block -->
+<a id="deepseek-aidsh-duplicate-call-block"></a>
+
+## `@deepseek-ai/dsh-duplicate-call-block`
+
+- `inject`: `agents`
+- `source`: [`packages/guard/duplicate-call-block/src/index.ts:24`](../packages/guard/duplicate-call-block/src/index.ts)
+
+```ts config-catalog
+/**
+ * Plugin config. `exclude` lists tool-name patterns (exact or `*`-wildcard)
+ * whose calls are never blocked — for tools where an identical repeat is the
+ * intended usage, such as polling `wait_agent` or `job_output`.
+ */
+export interface Config {
+  /** Tool-name patterns exempt from blocking. */
+  exclude?: string[]
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-duplicate-call-block -->
 
 <!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-experimental-api-speech-to-text -->
 <a id="deepseek-aidsh-experimental-api-speech-to-text"></a>
@@ -2923,6 +2966,33 @@ export interface Config {
 ```
 <!-- END GENERATED config-catalog:@deepseek-ai/dsh-repeat-tool-reminder -->
 
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-retry-budget -->
+<a id="deepseek-aidsh-retry-budget"></a>
+
+## `@deepseek-ai/dsh-retry-budget`
+
+- `inject`: `agents`
+- `source`: [`packages/guard/retry-budget/src/index.ts:27`](../packages/guard/retry-budget/src/index.ts)
+
+```ts config-catalog
+/**
+ * Plugin config. `maxRetriesPerStep` counts retries only: the first request
+ * of a step is free, then at most this many recovery decisions are delegated
+ * downstream (0 vetoes every retry). `fallbackProvider`/`fallbackModel` name
+ * an optional route to switch the agent to when a step's budget runs out;
+ * the switch is durable and takes effect at the next step preparation.
+ */
+export interface Config {
+  /** Retries allowed for one step before the guard vetoes recovery (default 2). */
+  maxRetriesPerStep?: number
+  /** Fallback route provider to select on budget exhaustion (empty = disabled). */
+  fallbackProvider?: string
+  /** Fallback route model to select on budget exhaustion (empty = disabled). */
+  fallbackModel?: string
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-retry-budget -->
+
 <!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-sandbox-local -->
 <a id="deepseek-aidsh-sandbox-local"></a>
 
@@ -3533,6 +3603,29 @@ export type HelperLaunch = {
 }
 ```
 <!-- END GENERATED config-catalog:@deepseek-ai/dsh-ssh -->
+
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-step-budget -->
+<a id="deepseek-aidsh-step-budget"></a>
+
+## `@deepseek-ai/dsh-step-budget`
+
+- `inject`: `agents`
+- `source`: [`packages/guard/step-budget/src/index.ts:33`](../packages/guard/step-budget/src/index.ts)
+
+```ts config-catalog
+/**
+ * Plugin config. `warnAt` is the 1-based step number at which the wrap-up
+ * warning is injected once per turn; `maxSteps` is the hard ceiling — a step
+ * proposed beyond it is rejected and the turn ends.
+ */
+export interface Config {
+  /** Step that receives the one-per-turn wrap-up warning (default 40). */
+  warnAt?: number
+  /** Hard ceiling on steps per turn; a higher proposed step is rejected (default 60). */
+  maxSteps?: number
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-step-budget -->
 
 <!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-storage-domain -->
 <a id="deepseek-aidsh-storage-domain"></a>

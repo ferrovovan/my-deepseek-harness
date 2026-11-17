@@ -1,5 +1,5 @@
 ---
-description: "循环卫生 guard 家族的包映射：建议性重复工具提醒与单次工具调用超时策略，供选择或组合 guard 的用户与维护者阅读。"
+description: "循环卫生 guard 家族的包映射：重复调用提醒与拦截、bash 干等禁令、回合步数上限、单步重试预算与工具调用超时策略，供选择或组合 guard 的用户与维护者阅读。"
 kind: "package-group"
 ---
 
@@ -9,7 +9,7 @@ kind: "package-group"
 
 ## 概述
 
-`guard/` 组通过监视两种常见失败模式来保持 agent loop（智能体循环）高效。`repeat-tool-reminder` 会在模型重复完全相同的工具调用时提醒它改变方法或结束任务，让卡住的循环不再浪费时间和 token。`timeout-policy` 为声明了限时的工具调用设置时间上限，让挂起的调用向模型返回清晰的超时错误，而不是拖住整个会话。两者都在 `dsh` 基础组合包中默认启用；组合可以调优或移除它们。
+`guard/` 组通过观察回合陷入空转或卡死的方式来保持 agent loop（智能体循环）高效。`repeat-tool-reminder` 把模型从完全相同的工具调用循环中提醒出来；`duplicate-call-block` 在同一回合内直接拒绝完全相同的重复；`bash-hygiene` 禁止前台 `sleep` 轮询与完整测试套件运行；`step-budget` 为每回合限步并在上限前发出收尾警告；`retry-budget` 限制每步自动 LLM 重试次数；`timeout-policy` 为声明了限时的工具调用设置超时。六个成员都在 `dsh` 基础组合包中默认启用；组合可以调优或移除它们。
 
 ## 目录
 
@@ -22,11 +22,15 @@ kind: "package-group"
 <a id="packages"></a>
 ## 包
 
-两个小插件分别覆盖两种模式；下文每个 README 都说明何时保留、调优或移除它。
+六个小插件分别覆盖这些空转模式；下文每个 README 都说明何时保留、调优或移除它。
 
 | 包 | 提供什么 |
 |---|---|
 | [`repeat-tool-reminder/`](repeat-tool-reminder/README.zh.md) | 在模型重复完全相同的工具调用时提醒它，使其改变方法或结束任务 |
+| [`duplicate-call-block/`](duplicate-call-block/README.zh.md) | 拒绝同一回合内完全相同的重复，让同一份输出绝不被付费两次 |
+| [`bash-hygiene/`](bash-hygiene/README.zh.md) | 拒绝 bash 中的前台 sleep 轮询与完整套件运行，点名合规的等待与测试路径 |
+| [`step-budget/`](step-budget/README.zh.md) | 为每回合设步数上限并在上限前发出收尾警告，让卡住的循环从容结束 |
+| [`retry-budget/`](retry-budget/README.zh.md) | 限制每步自动 LLM 重试并可切换到备用路由，让服务商抖动保持有界 |
 | [`timeout-policy/`](timeout-policy/README.zh.md) | 为声明了限时的工具调用设置超时，让模型得到清晰错误而不是无限等待 |
 
 -----

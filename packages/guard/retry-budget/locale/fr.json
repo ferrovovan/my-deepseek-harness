@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Budget de nouvelles tentatives",
+    "description": "Limitez les relances LLM automatiques par étape et basculez vers un itinéraire de repli en cas de veto."
+  }
+}

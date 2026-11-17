@@ -96,6 +96,13 @@
     - id: jobs
       name: '@deepseek-ai/dsh-jobs-local'
 
+    # Retry veto must be the outermost request-error listener, so it mounts
+    # before llm-retry (waterfall order = registration order).
+    - id: retry-budget
+      name: '@deepseek-ai/dsh-retry-budget'
+      config:
+        maxRetriesPerStep: 2
+
     - id: llm-retry
       name: '@deepseek-ai/dsh-llm-retry'
 
@@ -458,6 +465,21 @@
       config:
         thresholds: [3, 5, 8]
         argumentsPreviewChars: 500
+
+    # Exact duplicate calls within one turn are denied, not just reminded.
+    - id: duplicate-call-block
+      name: '@deepseek-ai/dsh-duplicate-call-block'
+
+    # Foreground sleep-polling and full test-suite runs are denied in bash.
+    - id: bash-hygiene
+      name: '@deepseek-ai/dsh-bash-hygiene'
+
+    # Hard per-turn step ceiling with an early wrap-up warning.
+    - id: step-budget
+      name: '@deepseek-ai/dsh-step-budget'
+      config:
+        warnAt: 40
+        maxSteps: 60
 
     # The shared base enables the stable model-facing web_search and web_fetch
     # tools. The Web app disables this host row and composes both tools per agent

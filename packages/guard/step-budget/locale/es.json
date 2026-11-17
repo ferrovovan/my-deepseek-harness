@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Presupuesto de pasos por turno",
+    "description": "Dé a cada turno un límite estricto de pasos con una advertencia temprana para cerrar."
+  }
+}

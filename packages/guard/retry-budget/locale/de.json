@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Wiederholungsbudget",
+    "description": "Begrenzen Sie automatische LLM-Wiederholungen pro Schritt und wechseln Sie bei Bedarf auf eine Ausweichroute."
+  }
+}

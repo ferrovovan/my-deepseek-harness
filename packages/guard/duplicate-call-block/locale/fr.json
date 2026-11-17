@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Blocage des appels en double",
+    "description": "Empêchez l'IA de réémettre exactement le même appel d'outil au cours d'un même tour."
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Hygiène bash",
+    "description": "Interdisez à l'IA de gaspiller des tours en attendant avec sleep ou en exécutant la suite de tests complète au premier plan."
+  }
+}

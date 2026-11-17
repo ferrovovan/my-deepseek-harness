@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Bash 卫生",
+    "description": "禁止 AI 用 sleep 干等或在前台运行完整测试套件来浪费回合。"
+  }
+}

@@ -1,5 +1,5 @@
 ---
-description: "Package map for the loop-hygiene guard family: the advisory repeat-tool reminder and the per-tool-call timeout policy, for users and maintainers choosing or composing the guards."
+description: "Package map for the loop-hygiene guard family: repeat-call reminder and blocking, bash idle-wait bans, a per-turn step ceiling, a per-step retry cap, and the tool-call timeout policy, for users and maintainers choosing or composing the guards."
 kind: "package-group"
 ---
 
@@ -9,7 +9,7 @@ English | [中文](README.zh.md)
 
 ## Summary
 
-The `guard/` group keeps the agent loop productive by watching for two common failure patterns. `repeat-tool-reminder` notices when the model repeats the exact same tool call and reminds it to change approach or finish, so a stuck loop stops burning time and tokens. `timeout-policy` puts a time limit on tool calls that declare one, so a hung call returns a clear timed-out error to the model instead of stalling the session. Both ship enabled in the `dsh` base bundle; a composition can tune or remove them.
+The `guard/` group keeps the agent loop productive by watching for the ways a turn goes idle or stuck. `repeat-tool-reminder` nudges the model out of identical tool-call loops; `duplicate-call-block` denies an identical repeat within one turn; `bash-hygiene` bans foreground `sleep` polling and full test-suite runs; `step-budget` caps steps per turn with an early wrap-up warning; `retry-budget` caps automatic LLM retries per step; `timeout-policy` times out tool calls that declare a limit. All six ship enabled in the `dsh` base bundle; a composition can tune or remove them.
 
 ## Table of Contents
 
@@ -22,11 +22,15 @@ The `guard/` group keeps the agent loop productive by watching for two common fa
 <a id="packages"></a>
 ## Packages
 
-Two small plugins cover the two patterns; each README below explains when to keep, tune, or remove it.
+Six small plugins cover the thrashing patterns; each README below explains when to keep, tune, or remove it.
 
 | Package | What it provides |
 |---|---|
 | [`repeat-tool-reminder/`](repeat-tool-reminder/README.md) | Reminds the model when it repeats the same tool call, so it changes approach or finishes |
+| [`duplicate-call-block/`](duplicate-call-block/README.md) | Denies an exactly identical repeat within one turn, so the same output is never paid for twice |
+| [`bash-hygiene/`](bash-hygiene/README.md) | Denies foreground sleep-polling and full-suite runs in bash, naming the sanctioned waiting and testing paths |
+| [`step-budget/`](step-budget/README.md) | Caps steps per turn with a wrap-up warning before the ceiling, so a stuck loop ends deliberately |
+| [`retry-budget/`](retry-budget/README.md) | Caps automatic LLM retries per step and can switch to a fallback route, so provider hiccups stay bounded |
 | [`timeout-policy/`](timeout-policy/README.md) | Times out tool calls that declare a limit, so the model gets a clear error instead of waiting forever |
 
 -----

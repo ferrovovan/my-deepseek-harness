@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Presupuesto de reintentos",
+    "description": "Limite los reintentos automáticos de LLM por paso y cambie a una ruta alternativa al vetar."
+  }
+}

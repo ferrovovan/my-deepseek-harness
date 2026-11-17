@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Higiene do bash",
+    "description": "Impeda que a IA desperdice turnos esperando com sleep ou executando a suíte de testes completa em primeiro plano."
+  }
+}

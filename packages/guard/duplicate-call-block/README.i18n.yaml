@@ -1,0 +1,67 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/guard/duplicate-call-block/README.md
+/:
+  en: bfb1d87fa02ae1af
+  zh: 517446df0c7aca0f
+/deepseek-ai-dsh-duplicate-call-block:
+  en: 5795cc5af0f24695
+  zh: 959caef4486b0f0e
+/deepseek-ai-dsh-duplicate-call-block/summary:
+  en: 709163e24ea6fab5
+  zh: ca39496188d799ab
+/deepseek-ai-dsh-duplicate-call-block/table-of-contents:
+  en: d152484eb41ac6b4
+  zh: 09388d293f9be9cb
+/deepseek-ai-dsh-duplicate-call-block/use-this-package:
+  en: 48f1ece21405c405
+  zh: 209610e379341363
+/deepseek-ai-dsh-duplicate-call-block/use-this-package/when-to-choose-it:
+  en: bf6bee3c226e564d
+  zh: b58057e4c97135e2
+/deepseek-ai-dsh-duplicate-call-block/use-this-package/exempting-polling-tools:
+  en: ac7015325088f462
+  zh: 49d8fe50e34baf42
+/deepseek-ai-dsh-duplicate-call-block/use-this-package/what-you-get:
+  en: bb7c7e45e6444013
+  zh: 1288a7ace4ea6730
+/deepseek-ai-dsh-duplicate-call-block/understand-the-implementation:
+  en: ca0a654c6353be75
+  zh: 0fe1911fb71403df
+/deepseek-ai-dsh-duplicate-call-block/understand-the-implementation/design-philosophy:
+  en: 6357e6acd0d55546
+  zh: 601ccfcbf92449c1
+/deepseek-ai-dsh-duplicate-call-block/understand-the-implementation/keying-and-scope:
+  en: 0ff23fff13a798ad
+  zh: 5f47d31fab577ab0
+/deepseek-ai-dsh-duplicate-call-block/understand-the-implementation/source-map:
+  en: 3ae5029d7f9d1f43
+  zh: 5d2db3b18b13359b
+/deepseek-ai-dsh-duplicate-call-block/further-exploration:
+  en: 8893a2daa21f8a48
+  zh: 1eb72fb3a9ce1b41
+/deepseek-ai-dsh-duplicate-call-block/model-experience:
+  en: 215e7ba838619b7b
+  zh: a311da3843709f90
+/deepseek-ai-dsh-duplicate-call-block/model-experience/denied-duplicate-tool-result:
+  en: 29d7fb538d5e5f04
+  zh: a0838093a3a7fdd0
+/deepseek-ai-dsh-duplicate-call-block/model-experience/denied-duplicate-tool-result/what-the-model-sees:
+  en: 0ddb438d3bb12de8
+  zh: d9a72717c8bd179d
+/deepseek-ai-dsh-duplicate-call-block/model-experience/denied-duplicate-tool-result/what-the-model-sees/duplicate-deny-reason:
+  en: 6b67fae0c077eec7
+  zh: 664a74fc684fb9b3
+/deepseek-ai-dsh-duplicate-call-block/model-experience/denied-duplicate-tool-result/token-effect:
+  en: 1a85d8b5cd4d25a7
+  zh: 89ffee7c1478a296
+/deepseek-ai-dsh-duplicate-call-block/model-experience/denied-duplicate-tool-result/kv-cache-effect:
+  en: 2e24c409d0c54a91
+  zh: 3ee23c204f7d23b4
+/deepseek-ai-dsh-duplicate-call-block/known-limitations-and-deferred-work:
+  en: ef8146e53a4b2a03
+  zh: 06766375f8b0c008
+/deepseek-ai-dsh-duplicate-call-block/known-limitations-and-deferred-work/dev-note:
+  en: d837b05065f71844
+  zh: 858d66d77c83db39

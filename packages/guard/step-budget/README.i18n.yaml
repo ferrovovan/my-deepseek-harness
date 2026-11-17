@@ -1,0 +1,67 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/guard/step-budget/README.md
+/:
+  en: 2a78a13ca0c3d804
+  zh: 2c2ace662d4a76d6
+/deepseek-ai-dsh-step-budget:
+  en: 4af7dfe0d3852013
+  zh: 17f28ab6d2dbbdd0
+/deepseek-ai-dsh-step-budget/summary:
+  en: 84a00d48c22c36de
+  zh: 095947bd2122c960
+/deepseek-ai-dsh-step-budget/table-of-contents:
+  en: d152484eb41ac6b4
+  zh: 09388d293f9be9cb
+/deepseek-ai-dsh-step-budget/use-this-package:
+  en: a41fa50da6def62a
+  zh: cf3b059a3d6224fe
+/deepseek-ai-dsh-step-budget/use-this-package/when-to-choose-it:
+  en: 8fe195e29a8d3d00
+  zh: d001dfca464693b1
+/deepseek-ai-dsh-step-budget/use-this-package/setting-the-ceiling-and-the-warning:
+  en: c2cdc22a4f62c22a
+  zh: 0292e4e0a144d5d7
+/deepseek-ai-dsh-step-budget/use-this-package/what-you-get:
+  en: 14ba550baedc8217
+  zh: fdd7732278d6d01c
+/deepseek-ai-dsh-step-budget/understand-the-implementation:
+  en: 3ed501549d313652
+  zh: ec6f2a2fe40e7085
+/deepseek-ai-dsh-step-budget/understand-the-implementation/design-philosophy:
+  en: e405b42bc07603d7
+  zh: e32d0abe830855d5
+/deepseek-ai-dsh-step-budget/understand-the-implementation/admission-flow:
+  en: 30e0130bd576a6cf
+  zh: 6b9c934666969da6
+/deepseek-ai-dsh-step-budget/understand-the-implementation/source-map:
+  en: aad4c67d9b090bce
+  zh: 6c51f6fa8d00aaf0
+/deepseek-ai-dsh-step-budget/further-exploration:
+  en: cc23c9289f62431d
+  zh: 6f234b92dbb3fd8e
+/deepseek-ai-dsh-step-budget/model-experience:
+  en: 215e7ba838619b7b
+  zh: a311da3843709f90
+/deepseek-ai-dsh-step-budget/model-experience/wrap-up-warning-message:
+  en: 181f336c051149b4
+  zh: 999c7ef9b0524f39
+/deepseek-ai-dsh-step-budget/model-experience/wrap-up-warning-message/what-the-model-sees:
+  en: 221f2cfbbea5e4a3
+  zh: 26a42d28439be7d6
+/deepseek-ai-dsh-step-budget/model-experience/wrap-up-warning-message/what-the-model-sees/step-budget-warning:
+  en: 7fdd5151dea8b228
+  zh: 2831b2dafd13b6df
+/deepseek-ai-dsh-step-budget/model-experience/wrap-up-warning-message/token-effect:
+  en: ae6e97132b123b15
+  zh: a5a2137acf313eb1
+/deepseek-ai-dsh-step-budget/model-experience/wrap-up-warning-message/kv-cache-effect:
+  en: 5c28126f71dc2e24
+  zh: 9ac035fc93d8775a
+/deepseek-ai-dsh-step-budget/known-limitations-and-deferred-work:
+  en: 9b2525a5f4ae5eaf
+  zh: a7a0874671a3b3cc
+/deepseek-ai-dsh-step-budget/known-limitations-and-deferred-work/dev-note:
+  en: fcfd4d6921c5a350
+  zh: 44a6b674f5ff4dcb

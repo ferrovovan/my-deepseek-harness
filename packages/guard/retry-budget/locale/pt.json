@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Orçamento de tentativas",
+    "description": "Limite as novas tentativas automáticas de LLM por etapa e mude para uma rota alternativa ao vetar."
+  }
+}

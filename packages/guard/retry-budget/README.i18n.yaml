@@ -1,0 +1,64 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/guard/retry-budget/README.md
+/:
+  en: 4691c396836c410f
+  zh: 4dd8befdc0834a0c
+/deepseek-ai-dsh-retry-budget:
+  en: 18dbadb190f8ff2d
+  zh: e25b529393013dd8
+/deepseek-ai-dsh-retry-budget/summary:
+  en: c7729815dccd9c93
+  zh: 1ecb62ab0f8e8191
+/deepseek-ai-dsh-retry-budget/table-of-contents:
+  en: d152484eb41ac6b4
+  zh: 09388d293f9be9cb
+/deepseek-ai-dsh-retry-budget/use-this-package:
+  en: 3c31ed13dff90176
+  zh: ec308b2b5140e579
+/deepseek-ai-dsh-retry-budget/use-this-package/when-to-choose-it:
+  en: 4bdab4c26d899a99
+  zh: b0e9e48bfbf7a732
+/deepseek-ai-dsh-retry-budget/use-this-package/setting-the-cap-and-the-fallback:
+  en: f5b8c2b2cb466c5e
+  zh: e41769979994aed0
+/deepseek-ai-dsh-retry-budget/use-this-package/what-you-get:
+  en: f3e7316288b4d978
+  zh: c8b403870f4f42ca
+/deepseek-ai-dsh-retry-budget/understand-the-implementation:
+  en: 74f2c80bbbef0ad6
+  zh: ad3d17bad912e1da
+/deepseek-ai-dsh-retry-budget/understand-the-implementation/design-philosophy:
+  en: 3cfdb5f28b91248f
+  zh: e20874158d2e7ea4
+/deepseek-ai-dsh-retry-budget/understand-the-implementation/the-veto-and-the-fallback:
+  en: 8c402aa1176a3f62
+  zh: 733e4737352e10d4
+/deepseek-ai-dsh-retry-budget/understand-the-implementation/source-map:
+  en: c8d2eb3c0160a412
+  zh: 270e66acf0a87e75
+/deepseek-ai-dsh-retry-budget/further-exploration:
+  en: def22713056153e2
+  zh: a8e7f5799a4e8393
+/deepseek-ai-dsh-retry-budget/model-experience:
+  en: 215e7ba838619b7b
+  zh: a311da3843709f90
+/deepseek-ai-dsh-retry-budget/model-experience/capped-retry-failure:
+  en: 74343097ef7ca2e5
+  zh: 5e3f3f59ee5ab28f
+/deepseek-ai-dsh-retry-budget/model-experience/capped-retry-failure/what-the-model-sees:
+  en: 727c52c095f4ec15
+  zh: 4fafd77a4154d378
+/deepseek-ai-dsh-retry-budget/model-experience/capped-retry-failure/token-effect:
+  en: a46be607a8d19751
+  zh: 09df8c572a9030f0
+/deepseek-ai-dsh-retry-budget/model-experience/capped-retry-failure/kv-cache-effect:
+  en: 9f7618ddcbbd0680
+  zh: b01804ba9f680bf7
+/deepseek-ai-dsh-retry-budget/known-limitations-and-deferred-work:
+  en: de495304fb1191a6
+  zh: 159161128fc56f9c
+/deepseek-ai-dsh-retry-budget/known-limitations-and-deferred-work/dev-note:
+  en: b1a625a5b7c8adf7
+  zh: 6d634a1611cfca1c

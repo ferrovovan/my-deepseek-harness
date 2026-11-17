@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Orçamento de passos por turno",
+    "description": "Dê a cada turno um teto rígido de passos com aviso antecipado de encerramento."
+  }
+}

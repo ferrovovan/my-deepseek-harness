@@ -1,0 +1,82 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/guard/bash-hygiene/README.md
+/:
+  en: 24f52c80da811e9b
+  zh: fdcdc4844c416e97
+/deepseek-ai-dsh-bash-hygiene:
+  en: e3f9b80cac98ed36
+  zh: 6fb6719fab905089
+/deepseek-ai-dsh-bash-hygiene/summary:
+  en: 760bf31962694798
+  zh: 93ebf6c1839d7788
+/deepseek-ai-dsh-bash-hygiene/table-of-contents:
+  en: d152484eb41ac6b4
+  zh: 09388d293f9be9cb
+/deepseek-ai-dsh-bash-hygiene/use-this-package:
+  en: 7361759aa0d77bab
+  zh: 03184f2a13e2ea3d
+/deepseek-ai-dsh-bash-hygiene/use-this-package/when-to-choose-it:
+  en: 5b0fdd4cdf380f56
+  zh: db593e8294ffc145
+/deepseek-ai-dsh-bash-hygiene/use-this-package/turning-the-bans-on-and-off:
+  en: 1d01f1ac2932b247
+  zh: c1a1962d184a7bc4
+/deepseek-ai-dsh-bash-hygiene/use-this-package/what-you-get:
+  en: d039d5ba893e1d64
+  zh: 5dff953ad8c3e24b
+/deepseek-ai-dsh-bash-hygiene/understand-the-implementation:
+  en: 205c318f80b46d03
+  zh: 6774d7bf11dcd90b
+/deepseek-ai-dsh-bash-hygiene/understand-the-implementation/design-philosophy:
+  en: 55852340b6663cf3
+  zh: 4b6088da955f7ce2
+/deepseek-ai-dsh-bash-hygiene/understand-the-implementation/detection:
+  en: a4ccbe6420fab756
+  zh: 42cc5ce848af2f4c
+/deepseek-ai-dsh-bash-hygiene/understand-the-implementation/source-map:
+  en: 8e2a3a3fb7c840ec
+  zh: a131465b3f30d4d8
+/deepseek-ai-dsh-bash-hygiene/further-exploration:
+  en: 30245b4e6a785f20
+  zh: 5bd65eb32f210bcd
+/deepseek-ai-dsh-bash-hygiene/model-experience:
+  en: 215e7ba838619b7b
+  zh: a311da3843709f90
+/deepseek-ai-dsh-bash-hygiene/model-experience/denied-sleep-poll-tool-result:
+  en: 3a6b02555bf99a14
+  zh: d9a136dea88724bd
+/deepseek-ai-dsh-bash-hygiene/model-experience/denied-sleep-poll-tool-result/what-the-model-sees:
+  en: 34715deedf08ea64
+  zh: 0c809983738c9609
+/deepseek-ai-dsh-bash-hygiene/model-experience/denied-sleep-poll-tool-result/what-the-model-sees/sleep-deny-reason:
+  en: 6088f03f313601c7
+  zh: 5196318bcfbda2f2
+/deepseek-ai-dsh-bash-hygiene/model-experience/denied-sleep-poll-tool-result/token-effect:
+  en: 629473a958c85e36
+  zh: 2f5c522a41e2ef8d
+/deepseek-ai-dsh-bash-hygiene/model-experience/denied-sleep-poll-tool-result/kv-cache-effect:
+  en: 2e24c409d0c54a91
+  zh: 3ee23c204f7d23b4
+/deepseek-ai-dsh-bash-hygiene/model-experience/denied-full-suite-tool-result:
+  en: dbb82433111c4bbb
+  zh: e97d9c8d5a9aa80b
+/deepseek-ai-dsh-bash-hygiene/model-experience/denied-full-suite-tool-result/what-the-model-sees:
+  en: f4d8f3506776ad0c
+  zh: 82d4230fc48b1409
+/deepseek-ai-dsh-bash-hygiene/model-experience/denied-full-suite-tool-result/what-the-model-sees/full-suite-deny-reason:
+  en: 29f0002c894c005a
+  zh: 231f8ee41a4fb555
+/deepseek-ai-dsh-bash-hygiene/model-experience/denied-full-suite-tool-result/token-effect:
+  en: 254d1fe28ae0b42a
+  zh: a79e0fda64a52668
+/deepseek-ai-dsh-bash-hygiene/model-experience/denied-full-suite-tool-result/kv-cache-effect:
+  en: 2e24c409d0c54a91
+  zh: 3ee23c204f7d23b4
+/deepseek-ai-dsh-bash-hygiene/known-limitations-and-deferred-work:
+  en: 422568c60dc9178b
+  zh: 98f9308ef4e532b6
+/deepseek-ai-dsh-bash-hygiene/known-limitations-and-deferred-work/dev-note:
+  en: a6d8b9a399af946d
+  zh: 7883f9a5a71b5b3b

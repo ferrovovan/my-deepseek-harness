@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Bloqueio de chamadas duplicadas",
+    "description": "Impeda que a IA repita exatamente a mesma chamada de ferramenta dentro de um mesmo turno."
+  }
+}

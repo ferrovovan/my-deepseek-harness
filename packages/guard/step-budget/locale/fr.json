@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Budget d'étapes par tour",
+    "description": "Donnez à chaque tour un plafond strict d'étapes avec un avertissement anticipé de clôture."
+  }
+}

@@ -143,10 +143,20 @@ export function assertAllowedModelSelection(
     ? provider === parentOptions.provider && model === parentOptions.model
     : policy.routes.some(route => route.provider === provider && route.model === model)
   if (allowed) return
+  // Name the valid choices: a denial that only says "not allowed" leaves the
+  // model guessing routes and retrying variants it has already burned.
+  const choices = policy === undefined
+    ? parentOptions.provider !== undefined && parentOptions.model !== undefined
+      ? [`the current parent route "${parentOptions.provider}/${parentOptions.model}"`]
+      : []
+    : policy.routes.map(entry => `"${entry.provider}/${entry.model}"`)
   throw new Error(`child LLM route "${provider}/${model}" is not allowed for this Session`
     + (policy === undefined
       ? '; without a recorded model-selection policy, explicit selection is limited to the parent route'
-      : ''))
+      : '')
+    + (choices.length === 0
+      ? '; no explicit child route is available — omit provider and model to inherit the parent route'
+      : `; allowed child route${choices.length === 1 ? '' : 's'}: ${choices.join(', ')} — or omit provider and model to inherit the parent route`))
 }
 
 /**

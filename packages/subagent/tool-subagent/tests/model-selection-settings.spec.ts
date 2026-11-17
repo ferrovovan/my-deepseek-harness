@@ -285,6 +285,9 @@ describe('SubagentModelSelectionConfig', () => {
 
     expect(result.isError).toBe(true)
     expect(text(result)).toContain('is not allowed for this Session')
+    // The denial names the valid choices so the model can correct in one step.
+    expect(text(result)).toContain('allowed child route: "alpha/fast-model"')
+    expect(text(result)).toContain('or omit provider and model to inherit the parent route')
     await ctx.fiber.dispose()
   })
 
