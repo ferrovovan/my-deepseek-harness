@@ -2,6 +2,19 @@
 
 Хроника обновлений этой ветки: что принёс апстрим между версиями. Личные фичи — в [FEATURES.md](FEATURES.md), процедура слияния — в [UPDATING-GUIDE.md](UPDATING-GUIDE.md).
 
+## 0.2.2-rc.1 → 0.2.2-rc.3 (merge-forward от 2026-11-17, тег `upstream-0.2.2-rc.3`)
+
+База ветки — апстрим `fcc0ad4` (0.2.2-rc.1). Влита вершина `39163dd3` (1371 коммит, 5645 файлов). Аудированы 32 точки пересечения с личными фичами; все фичи проверены после слияния (test:gui-спекты фич, ci-workflow 74/74, гарды 30/30, presets 53/53, полная сборка 8/8 гейтов).
+
+### Точки аудита и разрешения
+
+- **e2e.yml**: апстрим добавил bubblewrap-cache и ужесточил Preflight до `exit 1`; вилка «skip без ключа» сохранена (ключа DEEPSEEK_API_KEY_EXTERNAL нет и не будет), кеш апстрима взят.
+- **ui-workspace README (md/zh)**: сохранён абзац Warm reopen (тёплый кеш из FEATURES.md); формулировка доступа Ungrouped взята из апстрима; дигесты i18n перегенерированы.
+- **model-selection**: сообщение вилки со списком разрешённых маршрутов переведено на новый `SubagentError('MODEL_ROUTE_NOT_ALLOWED')` апстрима; тест проверяет обе части.
+- **goal**: апстрим не трогал `defaultMaxGoalRounds` — лимит 64 цел.
+- **presets**: апстрим не трогал dsh-time-context — вырезка цела; новые апстримные строки (tool-office, interrupt:false, customSkillDirs) приняты.
+- **SidebarRoot (brandTitle)**, ** cordis.patch.yml гардов**, **tsconfig-агрегаты**, **AGENTS.md/FEATURES.md/start.sh/UPDATE.md** — вилка целая.
+
 ## 0.2.1-rc.3 → 0.2.2-rc.1 (merge-forward от 2026-11-05, тег `upstream-0.2.2-rc.1`)
 
 База ветки — апстрим `22ddee37` (0.2.1-rc.3, 2026-10-23). Влита вершина `fcc0ad4` (0.2.2-rc.1, 2026-11-04): 1914 коммитов, 5252 изменённых файла.
