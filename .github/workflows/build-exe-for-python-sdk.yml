@@ -396,7 +396,14 @@ jobs:
           & "${{ steps.smoke-venv-windows.outputs.python }}" -I "$env:GITHUB_WORKSPACE\python\sdk\tests\run_installed_commands.py"
           if ($LASTEXITCODE -ne 0) { throw "Installed-wheel native command tests failed with exit code $LASTEXITCODE" }
 
+      # FORK MODIFICATION (personal fork): publishes whether
+      # DEEPSEEK_API_KEY_EXTERNAL is configured; the installed-wheel real API
+      # steps run only on `has_key=true`. This fork carries no copy of the
+      # upstream secret, so the upstream hard-failing preflight turned every CI
+      # build into a red run; without a key the real API step is skipped with a
+      # notice and the keyless wheel tests still run.
       - name: Preflight installed-wheel real API test (POSIX)
+        id: wheel-real-api-key-posix
         if: >-
           inputs.ci
           && runner.os != 'Windows'
@@ -408,11 +415,14 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${DEEPSEEK_API_KEY:-}" ]; then
-            echo "::error::DEEPSEEK_API_KEY_EXTERNAL is empty; the installed-wheel real API test cannot self-skip."
-            exit 1
+            echo "has_key=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::DEEPSEEK_API_KEY_EXTERNAL is not configured; the installed-wheel real API test is skipped."
+          else
+            echo "has_key=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Preflight installed-wheel real API test (Windows)
+        id: wheel-real-api-key-windows
         if: >-
           inputs.ci
           && runner.os == 'Windows'
@@ -424,13 +434,17 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}
         run: |
           if ([string]::IsNullOrWhiteSpace($env:DEEPSEEK_API_KEY)) {
-            throw 'DEEPSEEK_API_KEY_EXTERNAL is empty; the installed-wheel real API test cannot self-skip.'
+            'has_key=false' >> $env:GITHUB_OUTPUT
+            Write-Output '::notice::DEEPSEEK_API_KEY_EXTERNAL is not configured; the installed-wheel real API test is skipped.'
+          } else {
+            'has_key=true' >> $env:GITHUB_OUTPUT
           }
 
       - name: Run installed-wheel real API black-box test (POSIX)
         if: >-
           inputs.ci
           && runner.os != 'Windows'
+          && steps.wheel-real-api-key-posix.outputs.has_key == 'true'
           && (github.event_name != 'pull_request'
               || !(github.event.pull_request.head.repo.fork
                    || github.event.pull_request.user.login == 'dependabot[bot]'))
@@ -451,6 +465,7 @@ jobs:
         if: >-
           inputs.ci
           && runner.os == 'Windows'
+          && steps.wheel-real-api-key-windows.outputs.has_key == 'true'
           && (github.event_name != 'pull_request'
               || !(github.event.pull_request.head.repo.fork
                    || github.event.pull_request.user.login == 'dependabot[bot]'))
