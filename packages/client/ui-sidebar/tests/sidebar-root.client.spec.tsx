@@ -269,6 +269,30 @@ describe('SidebarRoot shell', () => {
     expect(container.querySelector('svg')).not.toBeNull()
   })
 
+  it('names the fallback brand with the build-time DSH_CLIENT_TITLE (personal fork)', () => {
+    // FORK MODIFICATION (personal fork): a build carrying its own product name
+    // shows it in the fallback brand instead of the generic local-build label.
+    vi.stubEnv('DSH_CLIENT_TITLE', 'My Harness')
+    vi.stubEnv('DSH_CLIENT_VERSION', '1.2.3')
+    render(<SidebarRoot
+      drawer={false}
+      collapsed={false} width={300}
+      useSessions={neverHook} useSessionStatus={useSessionStatus} useSessionRetainInfo={neverHook}
+      usePanelInfo={usePanelInfo} selectPanel={() => {}} usePanels={selector => selector([])} useEntryPins={selector => selector([])}
+      useEntryActions={selector => selector(false)} setPinned={vi.fn()}
+      useShortcuts={selector => selector([])}
+      useContextMenu={contextMenuHook()} useResource={useResource} useWorkspaces={neverHook}
+      {...allowAllAccess}
+      startSession={vi.fn()} toggleSidebar={vi.fn()} trackEntryClick={vi.fn()} t={t}
+      renderFactorySlot={() => null}
+      renderSlot={((_key: string, _owner: unknown, options?: { fallback?: ReactNode }) =>
+        options?.fallback ?? null) as SidebarRootComponentProps['renderSlot']}
+    />)
+
+    expect(screen.getByText('My Harness')).toBeTruthy()
+    expect(screen.queryByText('DSH Local Build')).toBeNull()
+  })
+
   it.each([
     [{ DSH_CLIENT_VERSION: '1.2.3' }, '1.2.3'],
     [{ DSH_CLIENT_COMMIT_HASH: 'abcdef0', DSH_CLIENT_VERSION: '1.2.3' }, '1.2.3-abcdef0'],

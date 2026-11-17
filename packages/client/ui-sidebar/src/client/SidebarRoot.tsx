@@ -266,6 +266,10 @@ export function SidebarRoot({
   }, [pointerInside])
 
   const buildVersion = localBuildVersion()
+  // FORK MODIFICATION (personal fork): a build can carry its own product name
+  // through DSH_CLIENT_TITLE; the fallback brand follows it the same way
+  // AppFrame's productTitle does, instead of always showing the generic label.
+  const brandTitle = process.env.DSH_CLIENT_TITLE ?? t('brand.localBuild')
   // The local-build fallbacks copy the badge text; the brand button below
   // skips New Session for clicks inside them. The click still bubbles, so
   // document-level outside-click listeners see it.
@@ -347,10 +351,10 @@ export function SidebarRoot({
               <span className={css.brandName}>
                 {renderSlot('sidebar.brand.name', {}, {
                   fallback: buildVersion === undefined
-                    ? <span className={css.fallbackBrandName}>{t('brand.localBuild')}</span>
+                    ? <span className={css.fallbackBrandName}>{brandTitle}</span>
                     : (
                       <span className={clsx(css.localBuildBrand, css.copyVersion)} data-copy-version onClick={copyVersion(buildVersion)}>
-                        <span className={css.localBuildTitle}>{t('brand.localBuild')}</span>
+                        <span className={css.localBuildTitle}>{brandTitle}</span>
                         <span className={css.buildVersion}>{buildVersion}</span>
                       </span>
                     ),
