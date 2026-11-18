@@ -1,0 +1,72 @@
+name: Desktop · Windows installer (fork)
+
+# Форк-сборка: пуш в main собирает неподписанный Windows-установщик приложения.
+# Апстримный windows-package.yml привязан к приватным self-hosted раннерам
+# (dsh-win-package-trial) и подписи EV-токеном — в форке недоступен. Здесь
+# GitHub-hosted windows-2025, конфигурация берётся из генерируемого
+# apps/desktop/.env.windows (git-игнорируемый dotenv; пример — .env.windows.example).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-windows-fork-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-installer:
+    runs-on: windows-2025
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
+    env:
+      DSH_TELEMETRY_DISABLED: '1'
+      # DSH_CLIENT_TITLE сюда не ставить: неподписанный путь собирает клиент
+      # через `build --profile local`, который отбрасывает DSH_CLIENT_TITLE.
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v5.0.0
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      # Родительские DSH_DESKTOP_* вырезаются упаковщиком: настройки берутся
+      # только из этого файла. DSH_PACKAGING_PRESET оставляем незаданным —
+      # иначе нужен DSH_PACKAGING_CONFIG_DIR с presets/<preset>.env.
+      - name: Write packaging settings file
+        run: |
+          cat > apps/desktop/.env.windows <<'EOF'
+          DSH_DESKTOP_APP_ID=com.deepseek.dsh
+          DSH_DESKTOP_AUTO_UPDATE_ENV=production
+          DSH_DESKTOP_MANDATORY_UPDATE_PROD_ORIGIN=https://localhost
+          DSH_DESKTOP_WINDOWS_COMPRESSION_LEVEL=3
+          EOF
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Быстрая диагностика: конфиг + инструменталка (vswhere/tar) до долгой сборки.
+      - name: Check packaging configuration and toolchain
+        run: pnpm run package:desktop:win:x64:unsigned --check
+
+      - name: Build unsigned Windows installer
+        run: pnpm run package:desktop:win:x64:unsigned
+
+      - name: Retain installer
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: dsh-windows-unsigned-${{ github.sha }}
+          path: apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/*.exe
+          if-no-files-found: error
+          retention-days: 14
