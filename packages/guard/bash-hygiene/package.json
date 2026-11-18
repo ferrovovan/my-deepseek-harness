@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-bash-hygiene",
   "description": "Bash hygiene guard plugin: denies foreground sleep-polling and full test-suite runs before they waste the turn",
-  "version": "0.2.2-rc.1",
+  "version": "0.2.2-rc.3",
   "publishConfig": {
     "access": "public"
   },

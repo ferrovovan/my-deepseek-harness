@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-duplicate-call-block",
   "description": "Duplicate call block guard plugin: denies a repeat call of the same tool with identical arguments within one turn",
-  "version": "0.2.2-rc.1",
+  "version": "0.2.2-rc.3",
   "publishConfig": {
     "access": "public"
   },
