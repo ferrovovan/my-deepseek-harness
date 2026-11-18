@@ -2,6 +2,18 @@
 
 Хроника обновлений этой ветки: что принёс апстрим между версиями. Личные фичи — в [FEATURES.md](FEATURES.md), процедура слияния — в [UPDATING-GUIDE.md](UPDATING-GUIDE.md).
 
+## Форк-CI: Windows-установщик с личным брендом (2026-11-18, `d0386ad2` → `eb3ca86f`)
+
+Воркфлоу `.github/workflows/desktop-windows-fork.yml`: при пуше в `main` на hosted `windows-2025` собирается неподписанный NSIS-установщик (`pnpm run package:desktop:win:x64:unsigned`), бренд `DSH_CLIENT_TITLE=Featured DSH` печётся наравне с локальной Linux-сборкой. VS Build Tools на `windows-2025` есть — `--check` проходит; апстримный `windows-package.yml` не пригоден (self-hosted лейбл `dsh-win-package-trial` и EV-подпись). Зелёный прогон: 44344750233, артефакт ~310 МБ.
+
+Три истинные причины падений по порядку, каждая открывала следующую после починки; до зелёного — шесть прогонов (последняя причина стреляла дважды: до и после неудачной попытки shim-а):
+
+1. **`tsc` host-агрегата** (`731ac046`): guard-тесты форка (`5cffdcd4`) никогда не компилировались полным агрегатом — неиспользуемые параметры и `isError: boolean | undefined`. Репродукция локально невозможна (полный `tsc -p tsconfig.host.json` съедает >2 ГБ), источник истины — аннотации CI.
+2. **Единство семейства `dsh`** (`822c2940`): `DshFamily.verifyVersions` требует одну версию у всех `packages/*/*` и `apps/*`; личные гарды остались на `0.2.2-rc.1` после merge-forward. Гейт `verify-version-sync` такой рассинхрон не ловит, поэтому версии новых личных пакетов поднимают до корневой вручную.
+3. **GNU tar vs bsdtar** (`eb3ca86f`): под `shell: bash` в PATH раньше системного GNU tar из Git-for-Windows; `tar -xOzf D:\a\...` принимает `D:` за remote host:path («Cannot connect to D:»). Апстрим этого не видит: его packaging-джобы идут под pwsh, где `tar` — системный bsdtar. Репозиторийный идиом — tar с `basename` и `cwd` рядом с tarball (`scripts/release/tarball.ts`); `prepare-package-set.ts` его миновал. Попытка shim-шагом подменить bsdtar через `GITHUB_PATH` (`4ec3f441`, отменён) не сработала: упаковщик пересобирает окружение стадий — починка должна быть в коде, не в PATH.
+
+Приём диагностики без прав на логи: логи джоба анонимно 403, аннотации check-run публичны — шаг `if: failure()` печатает `::error::` с хвостами `events.jsonl`/`stderr.log` упаковочного журнала `apps/desktop/.desktop-build/packaging-runs/<timestamp>/` (оставлен в воркфлоу на постоянной основе).
+
 ## 0.2.2-rc.1 → 0.2.2-rc.3 (merge-forward от 2026-11-17, тег `upstream-0.2.2-rc.3`)
 
 База ветки — апстрим `fcc0ad4` (0.2.2-rc.1). Влита вершина `39163dd3` (1371 коммит, 5645 файлов). Аудированы 32 точки пересечения с личными фичами; все фичи проверены после слияния (test:gui-спекты фич, ci-workflow 74/74, гарды 30/30, presets 53/53, полная сборка 8/8 гейтов).
