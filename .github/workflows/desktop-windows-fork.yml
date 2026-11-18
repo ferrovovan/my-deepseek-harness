@@ -43,6 +43,20 @@ jobs:
           node-version: '24'
           cache: pnpm
 
+      # В bash-шелле PATH ставит GNU tar из Git-for-Windows раньше системного:
+      # он трактует "D:\..." как remote host:path ("Cannot connect to D:").
+      # В shim-папку кладём копию системного bsdtar и поднимаем её в начало PATH
+      # следующих шагов — ровно как в апстримных pwsh-джобах, без вытеснения
+      # остальных unix-утилит из Git-for-Windows.
+      - name: Prefer system bsdtar
+        run: |
+          WIN_TEMP=$(cygpath -w "$RUNNER_TEMP")
+          UNIX_TEMP=$(cygpath -u "$WIN_TEMP")
+          mkdir -p "$UNIX_TEMP/shim"
+          cp /c/Windows/System32/tar.exe "$UNIX_TEMP/shim/tar.exe"
+          echo "$WIN_TEMP\\shim" >> "$GITHUB_PATH"
+          tar --version | head -1
+
       # Родительские DSH_DESKTOP_* вырезаются упаковщиком: настройки берутся
       # только из этого файла. DSH_PACKAGING_PRESET оставляем незаданным —
       # иначе нужен DSH_PACKAGING_CONFIG_DIR с presets/<preset>.env.
