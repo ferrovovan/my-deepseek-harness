@@ -52,7 +52,7 @@ afterEach(async () => {
 })
 
 /** Boot spine + guard + llm-retry (in that order) + a probe-free AgentLoop. */
-async function harness(adapter: BudgetAdapter, config: Config = {}): Promise<Context> {
+async function harness(_adapter: BudgetAdapter, config: Config = {}): Promise<Context> {
   const ctx = new Context()
   await mountAgentLoopTestDependencies(ctx)
   await ctx.plugin(RetryBudget, config)
@@ -62,7 +62,7 @@ async function harness(adapter: BudgetAdapter, config: Config = {}): Promise<Con
   return ctx
 }
 
-async function runTurn(ctx: Context, agent: Agent, text: string): Promise<void> {
+async function runTurn(_ctx: Context, agent: Agent, text: string): Promise<void> {
   agent.followup(createUserMessage({
     content: [{ type: 'text', text }],
     source: { kind: 'user' },

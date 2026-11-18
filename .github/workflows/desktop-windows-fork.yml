@@ -27,8 +27,10 @@ jobs:
         shell: bash
     env:
       DSH_TELEMETRY_DISABLED: '1'
-      # DSH_CLIENT_TITLE сюда не ставить: неподписанный путь собирает клиент
-      # через `build --profile local`, который отбрасывает DSH_CLIENT_TITLE.
+      # Личная фича форка: local-профиль сохраняет DSH_CLIENT_TITLE, поэтому
+      # `build --profile local` (unsigned-путь desktop) печёт то же название,
+      # что локальная Linux-сборка `DSH_CLIENT_TITLE="Featured DSH" pnpm run build`.
+      DSH_CLIENT_TITLE: Featured DSH
     steps:
       - uses: actions/checkout@v7.0.1
         with:

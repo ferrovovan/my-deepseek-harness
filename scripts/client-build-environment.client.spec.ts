@@ -143,7 +143,7 @@ describe('client build environment', () => {
     expect(repositoryCommitHash('/unused', { DSH_CLIENT_COMMIT_HASH: COMMIT_HASH })).toBe(COMMIT_HASH.slice(0, 7))
   })
 
-  it.each([undefined, 'true', 'false'])('isolates local branding while retaining repository metadata (dirty=%s)', (dirty) => {
+  it.each([undefined, 'true', 'false'])('retains local branding and repository metadata (dirty=%s)', (dirty) => {
     const parent = {
       DSH_BUILD_CLIENT_PROFILE: 'official',
       DSH_CLIENT_BUILD_PROFILE: 'official',
@@ -157,9 +157,16 @@ describe('client build environment', () => {
     expect(local).toEqual({
       DSH_CLIENT_BUILD_PROFILE: 'local',
       DSH_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
+      DSH_CLIENT_TITLE: 'DeepSeek Harness',
       DSH_CLIENT_VERSION: '1.2.3',
       ...(dirty === 'true' ? { DSH_CLIENT_GIT_DIRTY: 'true' } : {}),
     })
+    expect(resolveClientBuildEnvironment({ ...parent, DSH_CLIENT_TITLE: 'Featured DSH' }, 'local'))
+      .toEqual({ ...local, DSH_CLIENT_TITLE: 'Featured DSH' })
+    const localWithoutTitle: Record<string, string> = { ...local }
+    delete localWithoutTitle.DSH_CLIENT_TITLE
+    expect(resolveClientBuildEnvironment({ ...parent, DSH_CLIENT_TITLE: undefined }, 'local'))
+      .toEqual(localWithoutTitle)
     expect(clientBuildProcessEnvironment(parent, local)).toEqual(local)
     expect(resolveClientBuildEnvironment({ ...parent, DSH_BUILD_CLIENT_PROFILE: 'local' })).toEqual(local)
     expect(resolveClientBuildEnvironment({ ...parent, ...local }, 'official')).toEqual({

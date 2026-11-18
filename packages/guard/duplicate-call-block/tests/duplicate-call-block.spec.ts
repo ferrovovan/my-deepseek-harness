@@ -60,7 +60,7 @@ function toolResults(agent: Agent): { isError: boolean; text: string }[] {
   return agent.session.snapshotEvents()
     .filter((e): e is SessionEvent<'tool/result'> => e.type === 'tool/result')
     .map(e => ({
-      isError: e.data.message.isError,
+      isError: e.data.message.isError ?? false,
       text: e.data.message.content.map(b => b.type === 'text' ? b.text : '').join(''),
     }))
 }
