@@ -65,6 +65,19 @@ jobs:
       - name: Build unsigned Windows installer
         run: pnpm run package:desktop:win:x64:unsigned
 
+      # Диагностика для публичного просмотра: логи джоба анонимно недоступны (403),
+      # а ::error:: попадают в аннотации check-run, которые видны без авторизации.
+      - name: Publish packaging journal tail
+        if: failure()
+        run: |
+          RUN_DIR=$(ls -1dt apps/desktop/.desktop-build/packaging-runs/*/ 2>/dev/null | head -1 || true)
+          if [ -z "$RUN_DIR" ]; then echo "::error::no packaging-runs journal directory"; exit 0; fi
+          echo "journal: $RUN_DIR"
+          tail_lines() { tr '\r\n' '\n\n' < "$1" | tail -n "$2" | tr '\n' '|' ; }
+          [ -f "$RUN_DIR/stderr.log" ] && echo "::error::stderr tail: $(tail_lines "$RUN_DIR/stderr.log" 80)"
+          [ -f "$RUN_DIR/stdout.log" ] && echo "::error::stdout tail: $(tail_lines "$RUN_DIR/stdout.log" 40)"
+          [ -f "$RUN_DIR/events.jsonl" ] && echo "::error::events tail: $(tail -n 12 "$RUN_DIR/events.jsonl" | tr '\n' '|')"
+
       - name: Retain installer
         uses: actions/upload-artifact@v7.0.1
         with:
