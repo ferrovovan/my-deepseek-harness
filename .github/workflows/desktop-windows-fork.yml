@@ -22,6 +22,9 @@ jobs:
   windows-installer:
     runs-on: windows-2025
     timeout-minutes: 120
+    # Публикация Release штатным GITHUB_TOKEN: личных секретов по-прежнему нет.
+    permissions:
+      contents: write
     defaults:
       run:
         shell: bash
@@ -85,3 +88,22 @@ jobs:
           path: apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/*.exe
           if-no-files-found: error
           retention-days: 14
+
+      # Релиз переиспользуется по версии пакета: повторный пуш той же версии
+      # перезаписывает .exe (--clobber), тег релиза указывает на первый коммит версии.
+      - name: Publish installer release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="desktop-windows-$VERSION"
+          EXE=$(ls apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/*.exe | head -1)
+          NOTES="Неподписанный Windows-установщик (x64) сборки $VERSION с личным брендом Featured DSH. Commit: $GITHUB_SHA. Запуск через SmartScreen «Run anyway»."
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$EXE" --clobber
+            gh release edit "$TAG" --notes "$NOTES"
+          else
+            gh release create "$TAG" "$EXE" --target "$GITHUB_SHA" --latest=false \
+              --title "Windows installer $VERSION (unsigned, Featured DSH)" \
+              --prerelease --notes "$NOTES"
+          fi
