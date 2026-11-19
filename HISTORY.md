@@ -18,7 +18,7 @@
 
 Локализация бренда (`5ad7fd5d`): `DSH_CLIENT_TITLE_RU`/`_ZH` печатаются в brand-позициях при локали ru/zh — селектор `localizedBrandTitle` (`dsh-client-ui-primitives`) читает `document.documentElement.lang`. Локаль-плагин пишет `lang` до уведомления подписчиков, а смена локали выдаёт новые `t` → оба потребителя (AppFrame, SidebarRoot) перерисовываются и перезапрашивают название. Четвёртая причина падения форк-CI (`a2247c17`): новый devDependency в `ui-layout` без обновления `pnpm-lock.yaml` — `pnpm install --frozen-lockfile` отклоняет рассинхрон; при любой правке `package.json` гонять `pnpm install --lockfile-only` и коммитить блокировку вместе.
 
-## 0.2.2-rc.1 → 0.2.2-rc.3 (merge-forward от 2026-11-17, тег `upstream-0.2.2-rc.3`)
+## 0.2.2-rc.1 → 0.2.2-rc.3 (merge-forward от 2026-11-17, апстрим `39163dd3`)
 
 База ветки — апстрим `fcc0ad4` (0.2.2-rc.1). Влита вершина `39163dd3` (1371 коммит, 5645 файлов). Аудированы 32 точки пересечения с личными фичами; все фичи проверены после слияния (test:gui-спекты фич, ci-workflow 74/74, гарды 30/30, presets 53/53, полная сборка 8/8 гейтов).
 
@@ -31,7 +31,7 @@
 - **presets**: апстрим не трогал dsh-time-context — вырезка цела; новые апстримные строки (tool-office, interrupt:false, customSkillDirs) приняты.
 - **SidebarRoot (brandTitle)**, ** cordis.patch.yml гардов**, **tsconfig-агрегаты**, **AGENTS.md/FEATURES.md/start.sh/UPDATE.md** — вилка целая.
 
-## 0.2.1-rc.3 → 0.2.2-rc.1 (merge-forward от 2026-11-05, тег `upstream-0.2.2-rc.1`)
+## 0.2.1-rc.3 → 0.2.2-rc.1 (merge-forward от 2026-11-05, апстрим `fcc0ad46`)
 
 База ветки — апстрим `22ddee37` (0.2.1-rc.3, 2026-10-23). Влита вершина `fcc0ad4` (0.2.2-rc.1, 2026-11-04): 1914 коммитов, 5252 изменённых файла.
 
