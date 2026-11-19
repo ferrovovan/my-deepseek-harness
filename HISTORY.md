@@ -6,13 +6,17 @@
 
 Воркфлоу `.github/workflows/desktop-windows-fork.yml`: при пуше в `main` на hosted `windows-2025` собирается неподписанный NSIS-установщик (`pnpm run package:desktop:win:x64:unsigned`), бренд `DSH_CLIENT_TITLE=Featured DSH` печётся наравне с локальной Linux-сборкой. VS Build Tools на `windows-2025` есть — `--check` проходит; апстримный `windows-package.yml` не пригоден (self-hosted лейбл `dsh-win-package-trial` и EV-подпись). Зелёный прогон: 44344750233, артефакт ~310 МБ.
 
-Три истинные причины падений по порядку, каждая открывала следующую после починки; до зелёного — шесть прогонов (последняя причина стреляла дважды: до и после неудачной попытки shim-а):
+Три истинные причины падений по порядку, каждая открывала следующую после починки; до зелёного — шесть прогонов (последняя причина стреляла дважды: до и после неудачной попытки shim-а). Позже добавились ещё две — публикация релиза и локализация бренда, описаны ниже:
 
 1. **`tsc` host-агрегата** (`731ac046`): guard-тесты форка (`5cffdcd4`) никогда не компилировались полным агрегатом — неиспользуемые параметры и `isError: boolean | undefined`. Репродукция локально невозможна (полный `tsc -p tsconfig.host.json` съедает >2 ГБ), источник истины — аннотации CI.
 2. **Единство семейства `dsh`** (`822c2940`): `DshFamily.verifyVersions` требует одну версию у всех `packages/*/*` и `apps/*`; личные гарды остались на `0.2.2-rc.1` после merge-forward. Гейт `verify-version-sync` такой рассинхрон не ловит, поэтому версии новых личных пакетов поднимают до корневой вручную.
 3. **GNU tar vs bsdtar** (`eb3ca86f`): под `shell: bash` в PATH раньше системного GNU tar из Git-for-Windows; `tar -xOzf D:\a\...` принимает `D:` за remote host:path («Cannot connect to D:»). Апстрим этого не видит: его packaging-джобы идут под pwsh, где `tar` — системный bsdtar. Репозиторийный идиом — tar с `basename` и `cwd` рядом с tarball (`scripts/release/tarball.ts`); `prepare-package-set.ts` его миновал. Попытка shim-шагом подменить bsdtar через `GITHUB_PATH` (`4ec3f441`, отменён) не сработала: упаковщик пересобирает окружение стадий — починка должна быть в коде, не в PATH.
 
 Приём диагностики без прав на логи: логи джоба анонимно 403, аннотации check-run публичны — шаг `if: failure()` печатает `::error::` с хвостами `events.jsonl`/`stderr.log` упаковочного журнала `apps/desktop/.desktop-build/packaging-runs/<timestamp>/` (оставлен в воркфлоу на постоянной основе).
+
+Публикация релиза (`0b2a59cf`) — шаг с `GITHUB_TOKEN` и `permissions: contents: write`: тег `desktop-windows-<version>`, `--prerelease --latest=false`, повторная сборка той же версии — `gh release upload --clobber`. Первый же прогон зелёный: релиз `desktop-windows-0.2.2-rc.3` с ассетом `.exe` 325 МБ.
+
+Локализация бренда (`5ad7fd5d`): `DSH_CLIENT_TITLE_RU`/`_ZH` печатаются в brand-позициях при локали ru/zh — селектор `localizedBrandTitle` (`dsh-client-ui-primitives`) читает `document.documentElement.lang`. Локаль-плагин пишет `lang` до уведомления подписчиков, а смена локали выдаёт новые `t` → оба потребителя (AppFrame, SidebarRoot) перерисовываются и перезапрашивают название. Четвёртая причина падения форк-CI (`a2247c17`): новый devDependency в `ui-layout` без обновления `pnpm-lock.yaml` — `pnpm install --frozen-lockfile` отклоняет рассинхрон; при любой правке `package.json` гонять `pnpm install --lockfile-only` и коммитить блокировку вместе.
 
 ## 0.2.2-rc.1 → 0.2.2-rc.3 (merge-forward от 2026-11-17, тег `upstream-0.2.2-rc.3`)
 
