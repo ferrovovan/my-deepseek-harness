@@ -36,3 +36,7 @@ systemd-хелпер запуска `dsh web` в фоне; остаётся в �
 ## Доверенная сборка Windows-установщика по тегу
 
 Форк CI (`.github/workflows/desktop-windows-fork.yml`) собирает неподписанный `.exe` ТОЛЬКО при пуше тега `main-<version>` — сам тег выражает доверие к коммиту; обычные пуши в `main` сборку не запускают (заготовочные `main-pre-update-*` исключены из триггера явным отрицанием). Релиз attach-ится к тегу-триггеру (`gh release create "$GITHUB_REF_NAME" --prerelease --latest=false`, повтор прогона — `--clobber`), публикация идёт штатным `GITHUB_TOKEN` (`permissions: contents: write`) — личных секретов нет. Теги в форке не копятся: перед пересборкой старого удаляются, шаг публикации зачищает legacy-релизы `desktop-windows-*`.
+
+## Портативный Linux-бандл в релизе
+
+Та же форк-CI по доверенному тегу собирает джоба `linux-portable` архив `deepseek-harness-<version>-linux-x64-portable.tar.gz`: рабочее дерево после полного `pnpm run build` вместе с `node_modules` и переносным Node той же версии, что на runner. На другом Linux-компьютере (glibc x86-64, включая Arch) достаточно распаковать архив и запустить `./run-dsh-web.sh` — пересобирать исходники и ставить pnpm не нужно; Web UI поднимется на `http://127.0.0.1:3080` (порт через `DSH_WEB_PORT`). Архив весит гигабайты (Node 130 МБ + `node_modules` ~2,2 ГБ в сжатом виде), лежит prerelease-ассетом рядом с `.exe`.
