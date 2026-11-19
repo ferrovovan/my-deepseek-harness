@@ -120,3 +120,70 @@ jobs:
               gh release delete "$OLD" --yes --cleanup-tag
             done
           done
+
+  # Портативный linux-x64 бандл: ноутбук скачивает релизный .tar.gz и запускает
+  # ./run-dsh-web.sh без pnpm install и pnpm run build. Бандл = рабочее дерево
+  # после полного build (lib/types, bundles, Web dist) + node_modules вместе +
+  # переносной Node той же версии, что собирала runner. Раннер ubuntu = glibc
+  # x86-64: native аддон и node-pty совместимы с Arch. Ждёт windows-джобу,
+  # чтобы не спорить с ней за создание релиза.
+  linux-portable:
+    needs: windows-installer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    env:
+      DSH_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v5.0.0
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace artifacts
+        run: pnpm run build
+
+      - name: Assemble portable bundle
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./package.json').version")
+          NODE_V=$(node -p "process.versions.node")
+          DIST=$(mktemp -d)
+          mkdir -p "$DIST/bundle/node" "$DIST/bundle/dsh"
+          curl -fsSL "https://nodejs.org/dist/v${NODE_V}/node-v${NODE_V}-linux-x64.tar.xz" | tar -xJ -C "$DIST/bundle/node" --strip-components=1
+          tar -C . -cf - --exclude=./.git --exclude=./.github --exclude=./apps/desktop/.desktop-build --exclude=./apps/desktop/.env.windows . | tar -C "$DIST/bundle/dsh" -xf -
+          cat > "$DIST/bundle/run-dsh-web.sh" <<'RUNNER'
+          #!/usr/bin/env bash
+          # Портативный запуск Web UI из распакованного бандла: свой Node, без pnpm.
+          set -euo pipefail
+          HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          cd "$HERE/dsh"
+          exec "$HERE/node/bin/node" --import tsx/esm apps/cli/src/bin.ts web "$@"
+          RUNNER
+          chmod +x "$DIST/bundle/run-dsh-web.sh"
+          OUT="deepseek-harness-${VERSION}-linux-x64-portable.tar.gz"
+          tar -C "$DIST/bundle" -cf - node dsh run-dsh-web.sh | gzip -1 > "$RUNNER_TEMP/$OUT"
+          echo "ASSET=$RUNNER_TEMP/$OUT"
+          du -h "$RUNNER_TEMP/$OUT"
+
+      - name: Publish portable bundle release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="$GITHUB_REF_NAME"
+          ASSET=$(ls "$RUNNER_TEMP"/*-linux-x64-portable.tar.gz | head -1)
+          gh release upload "$TAG" "$ASSET" --clobber
