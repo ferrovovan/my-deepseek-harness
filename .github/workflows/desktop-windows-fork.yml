@@ -36,11 +36,7 @@ jobs:
       # Личная фича форка: local-профиль сохраняет DSH_CLIENT_TITLE, поэтому
       # `build --profile local` (unsigned-путь desktop) печёт то же название,
       # что локальная Linux-сборка `DSH_CLIENT_TITLE="Featured DSH" pnpm run build`.
-      # Локализованные варианты печатаются в UI при активной локали ru/zh
-      # (селектор — localizedBrandTitle в dsh-client-ui-primitives).
       DSH_CLIENT_TITLE: Featured DSH
-      DSH_CLIENT_TITLE_RU: Изменённый DSH
-      DSH_CLIENT_TITLE_ZH: 定制 DSH
     steps:
       - uses: actions/checkout@v7.0.1
         with:

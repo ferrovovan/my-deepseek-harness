@@ -163,16 +163,6 @@ describe('client build environment', () => {
     })
     expect(resolveClientBuildEnvironment({ ...parent, DSH_CLIENT_TITLE: 'Featured DSH' }, 'local'))
       .toEqual({ ...local, DSH_CLIENT_TITLE: 'Featured DSH' })
-    const localized = { ...parent, DSH_CLIENT_TITLE: 'Featured DSH', DSH_CLIENT_TITLE_RU: 'Изменённый DSH', DSH_CLIENT_TITLE_ZH: '定制 DSH' }
-    expect(resolveClientBuildEnvironment(localized, 'local')).toEqual({
-      ...local, DSH_CLIENT_TITLE: 'Featured DSH', DSH_CLIENT_TITLE_RU: 'Изменённый DSH', DSH_CLIENT_TITLE_ZH: '定制 DSH',
-    })
-    expect(resolveClientBuildEnvironment(localized, 'official')).toEqual({
-      DSH_CLIENT_BUILD_PROFILE: 'official',
-      DSH_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
-      DSH_CLIENT_TITLE: 'DeepSeek Harness',
-      DSH_CLIENT_VERSION: '1.2.3',
-    })
     const localWithoutTitle: Record<string, string> = { ...local }
     delete localWithoutTitle.DSH_CLIENT_TITLE
     expect(resolveClientBuildEnvironment({ ...parent, DSH_CLIENT_TITLE: undefined }, 'local'))
