@@ -1,6 +1,6 @@
 # DeepSeek Harness — 个人分支
 
-[English](README.md) | 中文
+[English](README.md) | [Русский](README.ru.md) | 中文
 
 本文另有[俄文版](README.ru.md)。
 

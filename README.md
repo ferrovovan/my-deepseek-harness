@@ -1,8 +1,6 @@
 # DeepSeek Harness — personal fork
 
-English | [中文](README.zh.md)
-
-Русская версия этого документа: [README.ru.md](README.ru.md).
+English | [Русский](README.ru.md) | [中文](README.zh.md)
 
 A personal fork of [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`dsh`), the open-source agent harness developed by [DeepSeek AI](https://deepseek.com). The upstream project owns the product; this fork runs it daily on one machine and carries a small set of personal quality-of-life features.
 
