@@ -622,7 +622,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
                 <span
                   class="localBuildTitle"
                 >
-                  DSH 本地构建
+                  定制 DSH
                 </span>
                 <span
                   class="buildVersion"
