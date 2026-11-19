@@ -112,6 +112,11 @@ jobs:
               --title "Windows installer $VERSION (unsigned, Featured DSH)" \
               --prerelease --notes "$NOTES"
           fi
-          for OLD in $(gh release list --limit 100 --json tagName --jq '.[].tagName | select(startswith("desktop-windows-"))'); do
-            gh release delete "$OLD" --yes --cleanup-tag
+          # Пересоздание тега (git push origin :refs/tags/...) превращает
+          # привязанный релиз в draft — публикуем явно, upload/edit draft не отменяют.
+          gh release edit "$TAG" --draft=false --latest=false --prerelease
+          for FLAGS in "" "--draft"; do
+            for OLD in $(gh release list --limit 100 $FLAGS --json tagName --jq '.[].tagName | select(startswith("desktop-windows-"))'); do
+              gh release delete "$OLD" --yes --cleanup-tag
+            done
           done
