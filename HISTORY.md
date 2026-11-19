@@ -16,7 +16,7 @@
 
 Публикация релиза (`0b2a59cf`) — шаг с `GITHUB_TOKEN` и `permissions: contents: write`: тег `desktop-windows-<version>`, `--prerelease --latest=false`, повторная сборка той же версии — `gh release upload --clobber`. Первый же прогон зелёный: релиз `desktop-windows-0.2.2-rc.3` с ассетом `.exe` 325 МБ.
 
-Локализация бренда (`5ad7fd5d`): `DSH_CLIENT_TITLE_RU`/`_ZH` печатаются в brand-позициях при локали ru/zh — селектор `localizedBrandTitle` (`dsh-client-ui-primitives`) читает `document.documentElement.lang`. Локаль-плагин пишет `lang` до уведомления подписчиков, а смена локали выдаёт новые `t` → оба потребителя (AppFrame, SidebarRoot) перерисовываются и перезапрашивают название. Четвёртая причина падения форк-CI (`a2247c17`): новый devDependency в `ui-layout` без обновления `pnpm-lock.yaml` — `pnpm install --frozen-lockfile` отклоняет рассинхрон; при любой правке `package.json` гонять `pnpm install --lockfile-only` и коммитить блокировку вместе.
+Локализация бренда: название продукта живёт в официальном пуле локалей — значения `brand.localBuild` в `packages/client/locale/src/locales/*.ts` (`Featured DSH` / `Изменённый DSH` / `定制 DSH`); локаль выбирает апстримный locale-плагин, код компонентов не тронут. Ранний вариант через рантайм-селектор `localizedBrandTitle` и переменные `DSH_CLIENT_TITLE_RU`/`_ZH` отменён (`3ee6dbed`): он дублировал механизм локализации и перекрывал словарь запечённой строкой. Четвёртая причина падения форк-CI (`a2247c17`): новый devDependency в `ui-layout` без обновления `pnpm-lock.yaml` — `pnpm install --frozen-lockfile` отклоняет рассинхрон; при любой правке `package.json` гонять `pnpm install --lockfile-only` и коммитить блокировку вместе.
 
 ## 0.2.2-rc.1 → 0.2.2-rc.3 (merge-forward от 2026-11-17, апстрим `39163dd3`)
 

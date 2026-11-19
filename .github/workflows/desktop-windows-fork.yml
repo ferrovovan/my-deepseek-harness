@@ -33,10 +33,11 @@ jobs:
         shell: bash
     env:
       DSH_TELEMETRY_DISABLED: '1'
-      # Личная фича форка: local-профиль сохраняет DSH_CLIENT_TITLE, поэтому
-      # `build --profile local` (unsigned-путь desktop) печёт то же название,
-      # что локальная Linux-сборка `DSH_CLIENT_TITLE="Featured DSH" pnpm run build`.
-      DSH_CLIENT_TITLE: Featured DSH
+      # Название продукта печатает официальный пул локалей: значение ключа
+      # `brand.localBuild` в packages/client/locale/src/locales/*.ts (личная
+      # правка значений — en «Featured DSH», ru «Изменённый DSH», zh «定制 DSH»).
+      # Локаль выбирает сам locale-плагин, поэтому DSH_CLIENT_TITLE здесь не
+      # задаём: одна запечённая строка перекрыла бы мультиязычность словаря.
     steps:
       - uses: actions/checkout@v7.0.1
         with:
