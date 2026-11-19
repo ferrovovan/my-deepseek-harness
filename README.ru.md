@@ -1,6 +1,6 @@
 # DeepSeek Harness — личная ветка
 
-[English](README.md) | [中文](README.zh.md) | Русский
+[English](README.md) | Русский | [中文](README.zh.md)
 
 Это личная ветка [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`dsh`) — открытого агентского харнесса от [DeepSeek AI](https://deepseek.com). Продуктом владеет апстрим; эта ветка запускает его на одной личной машине и несёт небольшой набор личных удобств.
 
