@@ -1,15 +1,18 @@
 name: Desktop · Windows installer (fork)
 
-# Форк-сборка: пуш в main собирает неподписанный Windows-установщик приложения.
-# Апстримный windows-package.yml привязан к приватным self-hosted раннерам
-# (dsh-win-package-trial) и подписи EV-токеном — в форке недоступен. Здесь
-# GitHub-hosted windows-2025, конфигурация берётся из генерируемого
+# Форк-сборка: НЕподписанный Windows-установщик собирается ТОЛЬКО по тегу вида
+# main-<version> — сам тег выражает доверие к коммиту, обычный пуш в main ничего
+# не собирает. Апстримный windows-package.yml привязан к приватным self-hosted
+# раннерам (dsh-win-package-trial) и подписи EV-токеном — в форке недоступен.
+# Здесь GitHub-hosted windows-2025, конфигурация берётся из генерируемого
 # apps/desktop/.env.windows (git-игнорируемый dotenv; пример — .env.windows.example).
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    tags:
+      - 'main-*'
+      # Заготовочные теги ветки (main-pre-update-*) не доверенные — не собираем.
+      - '!main-pre-update-*'
 
 permissions:
   contents: read
@@ -93,21 +96,25 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      # Релиз переиспользуется по версии пакета: повторный пуш той же версии
-      # перезаписывает .exe (--clobber), тег релиза указывает на первый коммит версии.
+      # Релиз attach-ится к доверенному тегу-триггеру ($GITHUB_REF_NAME):
+      # повторный прогон того же тега перезаписывает .exe (--clobber).
+      # Заодно зачищаются legacy-релизы старого именования desktop-windows-*.
       - name: Publish installer release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          TAG="desktop-windows-$VERSION"
+          TAG="$GITHUB_REF_NAME"
           EXE=$(ls apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/*.exe | head -1)
-          NOTES="Неподписанный Windows-установщик (x64) сборки $VERSION с личным брендом Featured DSH. Commit: $GITHUB_SHA. Запуск через SmartScreen «Run anyway»."
+          NOTES="Неподписанный Windows-установщик (x64) сборки $VERSION с личным брендом Featured DSH. Доверенный тег: $TAG, коммит: $GITHUB_SHA. Запуск через SmartScreen «Run anyway»."
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$EXE" --clobber
             gh release edit "$TAG" --notes "$NOTES"
           else
-            gh release create "$TAG" "$EXE" --target "$GITHUB_SHA" --latest=false \
+            gh release create "$TAG" "$EXE" --latest=false \
               --title "Windows installer $VERSION (unsigned, Featured DSH)" \
               --prerelease --notes "$NOTES"
           fi
+          for OLD in $(gh release list --limit 100 --json tagName --jq '.[].tagName | select(startswith("desktop-windows-"))'); do
+            gh release delete "$OLD" --yes --cleanup-tag
+          done

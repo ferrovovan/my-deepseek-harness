@@ -4,7 +4,7 @@
 
 ## Форк-CI: Windows-установщик с личным брендом (2026-11-18, `d0386ad2` → `eb3ca86f`)
 
-Воркфлоу `.github/workflows/desktop-windows-fork.yml`: при пуше в `main` на hosted `windows-2025` собирается неподписанный NSIS-установщик (`pnpm run package:desktop:win:x64:unsigned`), бренд `DSH_CLIENT_TITLE=Featured DSH` печётся наравне с локальной Linux-сборкой. VS Build Tools на `windows-2025` есть — `--check` проходит; апстримный `windows-package.yml` не пригоден (self-hosted лейбл `dsh-win-package-trial` и EV-подпись). Зелёный прогон: 44344750233, артефакт ~310 МБ.
+Воркфлоу `.github/workflows/desktop-windows-fork.yml`: c 2026-11-18 сборка запускается только тегом `main-<version>` (доверенный коммит), раньше — любым пушем в `main`; на hosted `windows-2025` собирается неподписанный NSIS-установщик (`pnpm run package:desktop:win:x64:unsigned`), бренд `DSH_CLIENT_TITLE=Featured DSH` печётся наравне с локальной Linux-сборкой. VS Build Tools на `windows-2025` есть — `--check` проходит; апстримный `windows-package.yml` не пригоден (self-hosted лейбл `dsh-win-package-trial` и EV-подпись). Зелёный прогон: 44344750233, артефакт ~310 МБ.
 
 Три истинные причины падений по порядку, каждая открывала следующую после починки; до зелёного — шесть прогонов (последняя причина стреляла дважды: до и после неудачной попытки shim-а). Позже добавились ещё две — публикация релиза и локализация бренда, описаны ниже:
 
