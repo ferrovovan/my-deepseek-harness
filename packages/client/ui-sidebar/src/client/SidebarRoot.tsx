@@ -22,7 +22,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import {
   FishLogo, IconAppsAddOutlineRegular, IconNewChatOutlineMedium, IconNewChatOutlineRegular,
-  IconPanelLeftOutlineRegular, IconPinFillRegular, focusWithoutRing, isBehindModal, isDarwinDesktop, Menu, ShortcutKeys, Toast,
+  IconPanelLeftOutlineRegular, IconPinFillRegular, focusWithoutRing, isBehindModal, isDarwinDesktop, localizedBrandTitle, Menu, ShortcutKeys, Toast,
   Tooltip, useModalLayer, writeClipboard,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { InjectFace, PropsRenderFactories, PropsRenderSlots, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
@@ -266,10 +266,9 @@ export function SidebarRoot({
   }, [pointerInside])
 
   const buildVersion = localBuildVersion()
-  // FORK MODIFICATION (personal fork): a build can carry its own product name
-  // through DSH_CLIENT_TITLE; the fallback brand follows it the same way
-  // AppFrame's productTitle does, instead of always showing the generic label.
-  const brandTitle = process.env.DSH_CLIENT_TITLE ?? t('brand.localBuild')
+  // FORK MODIFICATION (personal fork): the build bakes a localized brand title
+  // (DSH_CLIENT_TITLE + _RU/_ZH); reseeds on locale switch via documentElement.lang.
+  const brandTitle = localizedBrandTitle(t('brand.localBuild'))
   // The local-build fallbacks copy the badge text; the brand button below
   // skips New Session for clicks inside them. The click still bubbles, so
   // document-level outside-click listeners see it.

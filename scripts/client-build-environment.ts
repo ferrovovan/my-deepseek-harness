@@ -207,11 +207,14 @@ export function resolveClientBuildEnvironment(
       ...(profile === 'official' ? OFFICIAL_CLIENT_BUILD_ENVIRONMENT : {
         DSH_CLIENT_BUILD_PROFILE: 'local',
         ...(environment.DSH_CLIENT_GIT_DIRTY === 'true' ? { DSH_CLIENT_GIT_DIRTY: 'true' } : {}),
-        // Личная фича форка: local-профиль сохраняет DSH_CLIENT_TITLE, поэтому
-        // `build --profile local` (неподписанные desktop-сборки) несёт то же
-        // название, что `DSH_CLIENT_TITLE=... pnpm run build` без профиля.
+        // Личная фича форка: local-профиль сохраняет DSH_CLIENT_TITLE и его
+        // локализуемые варианты DSH_CLIENT_TITLE_RU / DSH_CLIENT_TITLE_ZH,
+        // поэтому `build --profile local` (неподписанные desktop-сборки) несёт
+        // то же название, что `DSH_CLIENT_TITLE=... pnpm run build` без профиля.
         // Официальный профиль неизменён — гейт держит точное DeepSeek Harness.
         ...(environment.DSH_CLIENT_TITLE === undefined ? {} : { DSH_CLIENT_TITLE: environment.DSH_CLIENT_TITLE }),
+        ...(environment.DSH_CLIENT_TITLE_RU === undefined ? {} : { DSH_CLIENT_TITLE_RU: environment.DSH_CLIENT_TITLE_RU }),
+        ...(environment.DSH_CLIENT_TITLE_ZH === undefined ? {} : { DSH_CLIENT_TITLE_ZH: environment.DSH_CLIENT_TITLE_ZH }),
       }),
     }
   }
