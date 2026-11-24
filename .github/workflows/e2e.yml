@@ -29,16 +29,16 @@ name: E2E (real DeepSeek API)
 # The fork/secret model and its public-repo implications are recorded in
 # .agents/notes/implemented/testing/2026-06-19-real-api-e2e-ci.md.
 #
-# Note: scheduled triggers are auto-disabled after 60 days of repo inactivity;
-# push/pull_request/workflow_dispatch act as backstops.
+# FORK TRIGGERS (personal fork): the nightly `schedule` and the main/master
+# `push` triggers are removed. This fork carries no API key, so every nightly
+# and every push run was keyless-skip noise the owner never asked for; the
+# 00:17 UTC cron ran without any human action ("CI без моего ведома").
+# Automatic product builds happen only on trusted `main-*` tags in
+# desktop-windows-fork.yml. This suite stays reachable via pull_request and
+# manual workflow_dispatch. Preserve the fork trigger set when merging upstream.
 on:
   workflow_dispatch:
-  push:
-    branches: [main, master]
   pull_request:
-  schedule:
-    # 00:17 UTC nightly = 08:17 Asia/Shanghai — off the top-of-hour cron stampede.
-    - cron: '17 0 * * *'
 
 # Keep only the newest validation in each workflow/ref, including master
 # pushes, nightly runs, and manual dispatches.
